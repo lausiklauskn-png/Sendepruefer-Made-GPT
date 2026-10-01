@@ -1,0 +1,1107 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sende-Prüfer — Kundendaten verdecken, bevor eine KI sie sieht</title>
+<meta name="description" content="Ein Postfach, das jede Mail prüft, bevor sie an eine KI geht: Schlüssel, Mailadressen, Telefonnummern, Kontonummern, Beträge, Rechnungsnummern und Namen werden durch Platzhalter ersetzt. Die Antwort kommt im Klartext zurück und lässt sich als .eml speichern oder teilen. Läuft im Browser, die Mails bleiben auf dem Gerät.">
+<meta name="theme-color" content="#0e6b72">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icons/favicon-32.png" sizes="32x32" type="image/png">
+<link rel="icon" href="icons/favicon-48.png" sizes="48x48" type="image/png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<script>try{var t=localStorage.getItem("sendepruefer_thema");if(t==="light"||t==="dark")document.documentElement.dataset.theme=t;}catch(e){}</script>
+<style>
+:root{--bg:#eef1f4;--fl:#fff;--fl2:#f6f8fa;--linie:#dde3e9;--schrift:#1b232c;--leise:#5c6975;--akzent:#0e6b72;--akzent-hell:#d7eeef;--h1:#15838b;--h2:#0a4a50;--glanz:#7fd8de;--schutz:#8a5000;--schutz-grund:#fff1d6;--schutz-rand:#e0b25e;--ok:#1f7a45;--ok-grund:#dff3e6;--warn:#a3321f;--mono:ui-monospace,"SF Mono",Menlo,Consolas,monospace;color-scheme:light}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#12171c;--fl:#1a2128;--fl2:#202932;--linie:#2e3944;--schrift:#e4eaf0;--leise:#9aa8b5;--akzent:#5cc2c9;--akzent-hell:#173a3d;--h1:#1b7f87;--h2:#0b4046;--glanz:#8fe4ea;--schutz:#f3b54a;--schutz-grund:#3a2c12;--schutz-rand:#7a5a1e;--ok:#6fd49a;--ok-grund:#163826;--warn:#ff9a85;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#12171c;--fl:#1a2128;--fl2:#202932;--linie:#2e3944;--schrift:#e4eaf0;--leise:#9aa8b5;--akzent:#5cc2c9;--akzent-hell:#173a3d;--h1:#1b7f87;--h2:#0b4046;--glanz:#8fe4ea;--schutz:#f3b54a;--schutz-grund:#3a2c12;--schutz-rand:#7a5a1e;--ok:#6fd49a;--ok-grund:#163826;--warn:#ff9a85;color-scheme:dark}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html,body{height:100%}
+body{margin:0;background:var(--bg);color:var(--schrift);font:15px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+button{font:inherit;color:inherit;cursor:pointer}
+button:focus-visible,textarea:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid var(--akzent);outline-offset:2px}
+a{color:var(--akzent)}
+code{font-family:var(--mono);font-size:.88em;overflow-wrap:anywhere}
+.app{display:grid;grid-template-columns:clamp(200px,15vw,300px) clamp(300px,24vw,460px) minmax(0,1fr);grid-template-rows:auto auto minmax(0,1fr);height:100vh;height:100dvh;width:100%}
+header.kopf{grid-column:1/-1;display:flex;align-items:center;gap:10px;padding:10px 16px;background:var(--fl);border-bottom:1px solid var(--linie)}
+.marke{display:flex;align-items:center;gap:10px;font-weight:700;font-size:1.05rem;white-space:nowrap}
+.marke img{flex:none;border-radius:9px;box-shadow:0 0 12px color-mix(in srgb,var(--akzent) 35%,transparent)}
+.leer-bild{display:block;width:100%;height:auto}
+.bild-buehne{position:relative;display:block;width:min(360px,70%);margin:0 auto 18px;border-radius:17%;overflow:hidden;isolation:isolate}
+.bild-buehne .leer-bild,.bild-buehne .bild-held{width:100%;margin:0}
+/* LICHTWEG-ANFANG — gebaut von tools/lichtweg.mjs, nicht von Hand ändern.
+   Klaus' Weg (2026-09-29): unten links hinein, im Bogen zur Mitte, im Bogen oben rechts hinaus.
+   Gleicher Abstand je Schritt, linear: kein Halt. Groß an Start, Mitte, Ende; in der Mitte die ganze Höhe. */
+.bild-buehne::after{content:"";position:absolute;left:4.4%;top:58.6%;width:14%;height:14%;border-radius:50%;translate:-50% -50%;pointer-events:none;mix-blend-mode:screen;opacity:0;background:radial-gradient(closest-side,rgb(255 255 255/.75),rgb(255 255 255/.28) 45%,rgb(143 228 234/.14) 70%,transparent);animation:licht-weg 3.5s linear infinite,kegel 3.5s ease-in-out infinite}
+/* … das Schild leuchtet auf, wenn der Schein die Mitte erreicht, und die Streifen am Boden strahlen heller zurück */
+.bild-buehne::before{content:"";position:absolute;inset:0;z-index:1;pointer-events:none;opacity:0;background:radial-gradient(16% 30% at 50% 48%,rgb(255 255 255/.7),transparent),url(icons/sende-pruefer-bild.webp) 0 0/100% 100%;mix-blend-mode:plus-lighter;filter:saturate(1.3);-webkit-mask:radial-gradient(18% 32% at 50% 48%,#000 60%,transparent),radial-gradient(22% 7% at 50% 87%,#000 55%,transparent);mask:radial-gradient(18% 32% at 50% 48%,#000 60%,transparent),radial-gradient(22% 7% at 50% 87%,#000 55%,transparent);animation:aufleuchten 3.5s ease-in-out infinite}
+/* … und das Icon gibt unter dem Schein nach wie ein lose aufgehängter Knopf */
+.bild-buehne{--wackeln:wackeln 3.5s linear infinite;animation:var(--wackeln)}
+@keyframes wackeln{0%{transform:perspective(900px) rotateX(0deg) rotateY(0deg)}2.08%{transform:perspective(900px) rotateX(-0.21deg) rotateY(-1.17deg)}4.17%{transform:perspective(900px) rotateX(-0.61deg) rotateY(-3.76deg)}6.25%{transform:perspective(900px) rotateX(-0.95deg) rotateY(-6.5deg)}8.33%{transform:perspective(900px) rotateX(-1.1deg) rotateY(-8.36deg)}10.42%{transform:perspective(900px) rotateX(-0.98deg) rotateY(-8.54deg)}12.5%{transform:perspective(900px) rotateX(-0.78deg) rotateY(-8.05deg)}14.58%{transform:perspective(900px) rotateX(-0.58deg) rotateY(-7.56deg)}16.67%{transform:perspective(900px) rotateX(-0.39deg) rotateY(-7.07deg)}18.75%{transform:perspective(900px) rotateX(-0.21deg) rotateY(-6.57deg)}20.83%{transform:perspective(900px) rotateX(-0.04deg) rotateY(-6.07deg)}22.92%{transform:perspective(900px) rotateX(0.12deg) rotateY(-5.57deg)}25%{transform:perspective(900px) rotateX(0.28deg) rotateY(-5.07deg)}27.08%{transform:perspective(900px) rotateX(0.42deg) rotateY(-4.56deg)}29.17%{transform:perspective(900px) rotateX(0.56deg) rotateY(-4.05deg)}31.25%{transform:perspective(900px) rotateX(0.68deg) rotateY(-3.54deg)}33.33%{transform:perspective(900px) rotateX(0.79deg) rotateY(-3.02deg)}35.42%{transform:perspective(900px) rotateX(0.88deg) rotateY(-2.5deg)}37.5%{transform:perspective(900px) rotateX(0.96deg) rotateY(-1.98deg)}39.58%{transform:perspective(900px) rotateX(1.02deg) rotateY(-1.45deg)}41.67%{transform:perspective(900px) rotateX(1.06deg) rotateY(-0.93deg)}43.75%{transform:perspective(900px) rotateX(1.07deg) rotateY(-0.4deg)}45.83%{transform:perspective(900px) rotateX(1.06deg) rotateY(0.13deg)}47.92%{transform:perspective(900px) rotateX(1.01deg) rotateY(0.65deg)}50%{transform:perspective(900px) rotateX(0.83deg) rotateY(1.15deg)}52.08%{transform:perspective(900px) rotateX(0.65deg) rotateY(1.64deg)}54.17%{transform:perspective(900px) rotateX(0.48deg) rotateY(2.14deg)}56.25%{transform:perspective(900px) rotateX(0.31deg) rotateY(2.64deg)}58.33%{transform:perspective(900px) rotateX(0.15deg) rotateY(3.14deg)}60.42%{transform:perspective(900px) rotateX(-0.01deg) rotateY(3.65deg)}62.5%{transform:perspective(900px) rotateX(-0.15deg) rotateY(4.16deg)}64.58%{transform:perspective(900px) rotateX(-0.29deg) rotateY(4.67deg)}66.67%{transform:perspective(900px) rotateX(-0.41deg) rotateY(5.18deg)}68.75%{transform:perspective(900px) rotateX(-0.52deg) rotateY(5.7deg)}70.83%{transform:perspective(900px) rotateX(-0.62deg) rotateY(6.22deg)}72.92%{transform:perspective(900px) rotateX(-0.69deg) rotateY(6.74deg)}75%{transform:perspective(900px) rotateX(-0.74deg) rotateY(7.26deg)}77.08%{transform:perspective(900px) rotateX(-0.75deg) rotateY(7.79deg)}79.17%{transform:perspective(900px) rotateX(-0.72deg) rotateY(8.32deg)}81.25%{transform:perspective(900px) rotateX(-0.61deg) rotateY(8.83deg)}83.33%{transform:perspective(900px) rotateX(-0.4deg) rotateY(9.32deg)}85.42%{transform:perspective(900px) rotateX(-0.05deg) rotateY(9.71deg)}87.5%{transform:perspective(900px) rotateX(0.42deg) rotateY(9.95deg)}89.58%{transform:perspective(900px) rotateX(0.94deg) rotateY(10.02deg)}91.67%{transform:perspective(900px) rotateX(1.35deg) rotateY(9.25deg)}93.75%{transform:perspective(900px) rotateX(1.35deg) rotateY(6.75deg)}95.83%{transform:perspective(900px) rotateX(0.93deg) rotateY(3.66deg)}97.92%{transform:perspective(900px) rotateX(0.33deg) rotateY(1.07deg)}100%{transform:perspective(900px) rotateX(0deg) rotateY(0deg)}}
+@keyframes licht-weg{0%{left:4.4%;top:58.6%}2.08%{left:6.4%;top:57.7%}4.17%{left:8.4%;top:56.7%}6.25%{left:10.4%;top:55.8%}8.33%{left:12.4%;top:54.9%}10.42%{left:14.4%;top:54.1%}12.5%{left:16.5%;top:53.2%}14.58%{left:18.5%;top:52.4%}16.67%{left:20.6%;top:51.6%}18.75%{left:22.6%;top:50.9%}20.83%{left:24.7%;top:50.2%}22.92%{left:26.8%;top:49.5%}25%{left:28.9%;top:48.8%}27.08%{left:31%;top:48.2%}29.17%{left:33.1%;top:47.7%}31.25%{left:35.3%;top:47.2%}33.33%{left:37.4%;top:46.7%}35.42%{left:39.6%;top:46.3%}37.5%{left:41.8%;top:46%}39.58%{left:43.9%;top:45.8%}41.67%{left:46.1%;top:45.6%}43.75%{left:48.3%;top:45.5%}45.83%{left:50.5%;top:45.6%}47.92%{left:52.7%;top:45.8%}50%{left:54.8%;top:46.5%}52.08%{left:56.8%;top:47.3%}54.17%{left:58.9%;top:48%}56.25%{left:61%;top:48.7%}58.33%{left:63.1%;top:49.4%}60.42%{left:65.2%;top:50%}62.5%{left:67.3%;top:50.6%}64.58%{left:69.4%;top:51.2%}66.67%{left:71.6%;top:51.7%}68.75%{left:73.7%;top:52.2%}70.83%{left:75.9%;top:52.6%}72.92%{left:78.1%;top:52.9%}75%{left:80.3%;top:53.1%}77.08%{left:82.5%;top:53.1%}79.17%{left:84.7%;top:53%}81.25%{left:86.8%;top:52.5%}83.33%{left:88.8%;top:51.7%}85.42%{left:90.5%;top:50.2%}87.5%{left:91.4%;top:48.3%}89.58%{left:91.8%;top:46.1%}91.67%{left:91.6%;top:43.9%}93.75%{left:91.2%;top:41.8%}95.83%{left:90.5%;top:39.7%}97.92%{left:89.7%;top:37.6%}100%{left:88.8%;top:35.6%}}
+@keyframes kegel{0%{scale:4;opacity:0}3%{opacity:1}23.8%{scale:1}47.7%{scale:4 7.14}73.8%{scale:1}97%{opacity:1}100%{scale:4;opacity:0}}
+@keyframes aufleuchten{0%,35.7%{opacity:0}47.7%{opacity:.85}61.7%,100%{opacity:0}}
+/* LICHTWEG-ENDE */
+@media (prefers-reduced-motion:reduce){.bild-buehne::after,.bild-buehne::before{animation:none;opacity:0}}
+.bild-buehne{animation:var(--wackeln),schweben 7s ease-in-out infinite;filter:drop-shadow(0 24px 40px rgb(0 0 0/.35))}
+@keyframes schweben{0%,100%{translate:0 0}50%{translate:0 -8px}}
+.flug{position:fixed;z-index:60;pointer-events:none;border-radius:18%;will-change:transform}
+@media (prefers-reduced-motion:reduce){.bild-buehne{animation:none!important}}
+/* ── Netz-Leiste: Lampen, Siegel, Mycel-Blase — fest im Kopf ── */
+.netzleiste{position:relative;display:flex;align-items:center;gap:6px;flex:none}
+.lampen{display:flex;align-items:center;gap:8px;height:40px;box-sizing:border-box;padding:0 10px;border:1px solid var(--linie);border-radius:999px;background:var(--fl2);color:var(--leise);font:inherit;font-size:.72rem;cursor:pointer}
+.lamp{display:inline-flex;align-items:center;gap:4px}
+.lamp::before{content:"";width:9px;height:9px;border-radius:50%;background:color-mix(in srgb,var(--leise) 45%,transparent)}
+.lamp.on::before{background:#2fbf71;box-shadow:0 0 7px #2fbf71}
+.lamp.warn::before{background:#e8b33a;box-shadow:0 0 7px #e8b33a}
+.lamp.bad::before{background:#e5484d;box-shadow:0 0 7px #e5484d}
+.lamp.puls::before{animation:lampenpuls .9s ease-out}
+@keyframes lampenpuls{0%{transform:scale(1.8)}100%{transform:scale(1)}}
+.netz-mehr{display:flex;align-items:center;gap:6px}
+.siegel-platz{display:inline-flex;align-items:center;min-width:34px;min-height:34px}
+.siegel-platz:empty{min-width:0}
+.mycel-platz{display:inline-flex;align-items:center}
+.lampen-legende{display:none}
+/* Modul 16 liefert das Wappen als SVG ohne Maße — im Flex-Kasten wäre es
+   0 px breit (Befund Toolpoint 2026-08-09, hier nachgemessen: 0×0). */
+#sbkim-siegel-badge{width:28px;height:28px;flex:none;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;border-radius:50%}
+#sbkim-siegel-badge svg{width:100%;height:100%;display:block}
+@media (max-width:900px){
+ .lamp-t{display:none}
+ .lampen{gap:5px;padding:0 9px}
+ .netz-mehr{display:none;position:absolute;top:calc(100% + 8px);left:0;z-index:40;padding:8px 10px;gap:10px;background:var(--fl);border:1px solid var(--linie);border-radius:12px;box-shadow:0 10px 26px rgb(0 0 0/.22)}
+ .netzleiste[data-offen="1"] .netz-mehr{display:flex}
+ .netzleiste[data-offen="1"] .lampen{border-color:var(--akzent)}
+ .lampen-legende{display:flex;flex-direction:column;gap:4px;font-size:.78rem;color:var(--schrift);white-space:nowrap}
+}
+/* Zwischen Handy und breitem Schirm tragen die Kopf-Knöpfe nur ihr Zeichen —
+   sonst bleibt der Suche neben der Netz-Leiste kein Platz (gemessen 760 px: 30 px). */
+@media (max-width:1200px){.kopf .rund .t{display:none}}
+@media (max-width:400px){.marke{display:none} #thema{display:none}}
+.kopf a.rund{display:inline-flex;align-items:center;justify-content:center;text-decoration:none;color:inherit;font-weight:700;font-size:1.05rem}
+.suche{flex:1;min-width:0;max-width:560px;height:40px;box-sizing:border-box;display:flex;align-items:center;gap:8px;background:var(--fl2);border:1px solid var(--linie);border-radius:999px;padding:0 14px;color:var(--leise)}
+.suche input{border:0;background:transparent;color:var(--schrift);font:inherit;width:100%;outline:0;min-width:0;height:100%;padding:0;margin:0;box-shadow:none}
+.kopf .rund{flex:none;min-width:40px;height:40px;padding:0 12px;border-radius:999px}
+#schild[data-an="1"]{background:linear-gradient(180deg,var(--h1),var(--h2));color:#fff}
+#schild .zahl{display:inline-block;min-width:1.4em;margin-left:4px;padding:0 5px;border-radius:999px;background:#c62828;color:#fff;font-size:.78rem}
+.banner.fremd{background:#fdecea;color:#8a1c14;border-bottom-color:#e8a39c;display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+[data-theme="dark"] .banner.fremd{background:#3a1512;color:#ffb4ab;border-bottom-color:#6d2a24}
+ul.funde-liste{margin:.3rem 0;padding-left:1.2rem}
+.bannerplatz{grid-column:1/-1;min-width:0}
+.banner{grid-column:1/-1;margin:0;padding:10px 16px;background:var(--schutz-grund);color:var(--schutz);border-bottom:1px solid var(--schutz-rand);font-weight:600}
+nav.ordner{padding:14px 10px;display:flex;flex-direction:column;gap:2px;border-right:1px solid var(--linie);background:var(--fl);overflow:auto}
+.neu{display:flex;align-items:center;gap:10px;margin:0 4px 14px;padding:12px 18px;border-radius:16px}
+.ord{display:flex;align-items:center;gap:12px;padding:9px 14px;border:0;background:transparent;border-radius:0 999px 999px 0;text-align:left;width:100%}
+.ord .zahl{margin-left:auto;font-size:.8rem;color:var(--leise)}
+.ord[aria-current="true"]{background:var(--akzent-hell);color:var(--akzent);font-weight:600}
+.schutzbox{margin:auto 6px 4px;padding:12px;border-radius:12px;background:var(--fl2);font-size:.8rem;color:var(--leise)}
+.schutzbox b{color:var(--schrift);display:block;margin-bottom:2px}
+section.liste{background:var(--fl);border-right:1px solid var(--linie);overflow:auto;min-width:0}
+.zweck{margin:0;padding:12px 16px;font-size:.84rem;color:var(--leise);border-bottom:1px solid var(--linie)}
+.liste h2{font-size:.78rem;letter-spacing:.06em;text-transform:uppercase;color:var(--leise);margin:0;padding:14px 16px 6px}
+.unter{padding:0 16px 10px;font-size:.82rem;color:var(--leise);margin:0}
+.zeile{display:grid;grid-template-columns:36px minmax(0,1fr) auto;gap:4px 12px;padding:12px 16px;border:0;border-top:1px solid var(--linie);background:transparent;text-align:left;width:100%}
+.zeile[aria-current="true"]{background:var(--akzent-hell)}
+.av{grid-row:span 2;width:36px;height:36px;border-radius:50%;display:grid;place-items:center;font-weight:600;font-size:.85rem;color:#fff}
+.zeile .wer{font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.zeile.ungelesen .wer::after{content:"";display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--akzent);margin-left:6px;vertical-align:middle}
+.zeile .zeit{font-size:.78rem;color:var(--leise)}
+.zeile .betr{grid-column:2/4;font-size:.88rem;color:var(--leise);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.zeile .chips{grid-column:2/4;display:flex;gap:6px;flex-wrap:wrap}
+.chip{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--schutz-rand);background:var(--schutz-grund);color:var(--schutz);border-radius:999px;padding:2px 10px;font-size:.78rem;font-weight:600}
+.chip.gut{border-color:transparent;background:var(--ok-grund);color:var(--ok)}
+button.chip{cursor:pointer;font:inherit;font-size:.82rem}button.chip:hover{border-color:var(--petrol,#5cc2c9)}
+.chip.leise{border-color:var(--linie);background:var(--fl2);color:var(--leise)}
+main.lesen{overflow:auto;min-width:0;padding:18px 28px 40px;container-type:inline-size}
+.leer{color:var(--leise);text-align:center;margin-top:18vh}
+.knopf.zurueck{display:none}
+.werkzeug{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:14px}
+.knopf{display:inline-flex;align-items:center;gap:8px;border-radius:12px;padding:8px 16px;min-height:40px;font-weight:700;font-size:.9rem}
+/* Glas-Knöpfe nach Tomys Hub (tomy-ui/theme.css, „Glas-Cabochon“): Tiefe aus
+   inneren Schatten, ein Lichtfleck, der dem Zeiger folgt (--mx/--my), beim
+   Drücken gibt der Knopf nach. Zwei Sorten: haupt (Farbe) und sonst (Fläche). */
+.knopf,.kopf .rund,.neu,.fab{position:relative;overflow:hidden;cursor:pointer;border:1px solid var(--linie);
+  background:linear-gradient(180deg,var(--fl),var(--fl2));color:var(--schrift);
+  box-shadow:inset 0 2px 1px rgb(255 255 255/.45),inset 0 -4px 8px rgb(0 0 0/.10),0 6px 14px rgb(0 0 0/.12),0 2px 4px rgb(0 0 0/.10);
+  transition:transform .14s ease,box-shadow .2s ease,border-color .2s}
+.knopf::before,.kopf .rund::before,.neu::before,.fab::before{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;
+  background:radial-gradient(90px 60px at var(--mx,50%) var(--my,20%),rgb(255 255 255/.55),transparent 60%),linear-gradient(180deg,rgb(255 255 255/.28),transparent 48%);
+  mix-blend-mode:screen;opacity:.35;transition:opacity .22s}
+.knopf:hover::before,.kopf .rund:hover::before,.neu:hover::before,.fab:hover::before,.knopf:focus-visible::before{opacity:1}
+.knopf:hover,.kopf .rund:hover{border-color:var(--akzent);box-shadow:inset 0 2px 1px rgb(255 255 255/.45),inset 0 -4px 8px rgb(0 0 0/.12),0 10px 22px rgb(0 0 0/.16),0 0 18px color-mix(in srgb,var(--akzent) 30%,transparent)}
+.knopf:active,.kopf .rund:active,.neu:active,.fab:active{transform:scale(.97)}
+.knopf.haupt,.neu,.fab{border-color:transparent;color:#fff;background:linear-gradient(135deg,var(--h1),var(--h2) 75%);
+  text-shadow:0 1px 1px rgb(0 0 0/.3);
+  box-shadow:inset 0 2px 1px rgb(255 255 255/.45),inset 0 -5px 9px rgb(0 0 0/.35),inset 0 0 0 1px rgb(255 255 255/.12),0 10px 22px rgb(0 0 0/.22),0 3px 6px rgb(0 0 0/.18)}
+.knopf.haupt:hover,.neu:hover,.fab:hover{box-shadow:inset 0 2px 1px rgb(255 255 255/.6),inset 0 -5px 9px rgb(0 0 0/.4),0 14px 28px rgb(0 0 0/.3),0 0 24px color-mix(in srgb,var(--glanz) 45%,transparent)}
+.knopf>*,.neu>*,.fab>*,.kopf .rund>*{position:relative}
+@media (prefers-reduced-motion:reduce){.knopf,.kopf .rund,.neu,.fab{transition:none}.knopf:active,.kopf .rund:active,.neu:active,.fab:active{transform:none}}
+.knopf.klein{padding:4px 12px;min-height:34px}
+h1.betreff{font-size:1.4rem;line-height:1.25;margin:4px 0 12px;overflow-wrap:anywhere}
+.absender{display:flex;align-items:center;gap:12px;margin-bottom:14px}
+.absender .av{grid-row:auto}
+.adr{color:var(--leise);font-size:.85rem;overflow-wrap:anywhere}
+.umschalter{display:inline-flex;border:1px solid var(--linie);border-radius:999px;padding:3px;background:var(--fl2)}
+.umschalter button{border:0;background:transparent;border-radius:999px;padding:5px 14px;font-size:.85rem;font-weight:600;color:var(--leise)}
+.umschalter button[aria-pressed="true"]{background:var(--fl);color:var(--schrift);box-shadow:0 1px 2px rgb(0 0 0/.15)}
+.blatt{background:var(--fl);border:1px solid var(--linie);border-radius:14px;padding:18px 20px;white-space:pre-wrap;overflow-wrap:anywhere;margin:0;font:inherit}
+.blatt.ki{border-color:var(--schutz-rand)}
+.fund{background:var(--schutz-grund);color:inherit;border-bottom:2px solid var(--schutz-rand);border-radius:3px;padding:0 2px}
+.tok{font-family:var(--mono);font-size:.82em;background:var(--schutz-grund);color:var(--schutz);border:1px solid var(--schutz-rand);border-radius:6px;padding:0 5px;white-space:nowrap}
+textarea,input,select{background:var(--fl);color:var(--schrift);border:1px solid var(--linie);border-radius:10px;padding:9px 11px;font:inherit;width:100%}
+textarea.blatt{display:block;min-height:14rem;resize:vertical}
+.feldzeile{display:flex;gap:10px;align-items:center;border-bottom:1px solid var(--linie);padding:6px 2px}
+.feldzeile label{color:var(--leise);width:64px;flex:none;font-size:.88rem}
+.feldzeile input{flex:1;min-width:0;border:0;background:transparent;padding:6px 0;border-radius:0}
+.feldzeile+textarea{margin-top:12px}
+.namen{margin:14px 0 0;font-size:.88rem}
+.namen label{display:block;font-weight:600;margin-bottom:2px}
+.gedaempft,small{color:var(--leise)}
+.funde{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0 0}
+.funde span{font-size:.78rem;background:var(--fl2);border:1px solid var(--linie);border-radius:6px;padding:2px 8px;color:var(--leise)}
+ul.befunde{list-style:none;padding:0;margin:.4rem 0}
+ul.befunde li{padding:5px 0;border-top:1px solid var(--linie);font-size:.88rem;overflow-wrap:anywhere}
+.sorte{font-family:var(--mono);font-size:.75rem;padding:1px 6px;border-radius:5px;background:var(--fl2);color:var(--akzent);margin-right:.4rem}
+details summary{cursor:pointer;color:var(--leise);min-height:32px;padding:4px 0}
+.kasten{background:var(--fl);border:1px solid var(--linie);border-radius:14px;padding:14px 16px;margin:14px 0}
+.kasten h2{font-size:1rem;margin:0 0 6px}
+.kasten label{display:block;font-weight:600;margin:.6rem 0 .2rem;font-size:.9rem}
+.zwei{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:12px}
+.zwei>.kasten{margin:0}
+@container (max-width:560px){.zwei{grid-template-columns:minmax(0,1fr)}}
+.meldung{min-height:1.2em;margin:.4rem 0}
+.meldung.warn{color:var(--warn)}
+.meldung.gut{color:var(--ok)}
+.antwort{border-color:var(--akzent)}
+.beispiel-hin{background:var(--akzent-hell);color:var(--akzent);border-radius:10px;padding:8px 12px;margin:0 0 12px;font-size:.88rem}
+dialog{border:1px solid var(--linie);border-radius:16px;background:var(--fl);color:var(--schrift);width:min(620px,calc(100vw - 24px));max-height:calc(100dvh - 24px);padding:18px}
+dialog::backdrop{background:rgb(0 0 0/.45)}
+dialog h2{margin:0 0 8px;font-size:1.1rem}
+.fuss{display:flex;gap:8px;justify-content:flex-end;flex-wrap:wrap;margin-top:12px}
+.bottomnav,.fab{display:none}
+@media (max-width:1000px){.app{grid-template-columns:72px 300px minmax(0,1fr)} .ord .t,.ord .zahl,.schutzbox,.neu span{display:none} .neu{padding:12px;justify-content:center} .ord{justify-content:center;border-radius:12px}}
+@media (max-width:720px){
+ .app{grid-template-columns:minmax(0,1fr);grid-template-rows:auto auto minmax(0,1fr) auto}
+ nav.ordner{display:none}
+ section.liste,main.lesen{grid-column:1;grid-row:3}
+ .app[data-ansicht="lesen"] section.liste{display:none}
+ .app:not([data-ansicht="lesen"]) main.lesen{display:none}
+ main.lesen{padding:12px 14px 30px}
+ .knopf.zurueck{display:inline-flex}
+ /* Kopfleiste am Handy: sie lief schon vor der Netz-Leiste ~50 px über den
+    Rand (gemessen 2026-09-29 auf main, 380 px). Schmalere Abstände und runde
+    Knöpfe geben dem Suchfeld seinen Platz zurück. */
+ header.kopf{gap:6px;padding:10px 12px}
+ .kopf .rund{min-width:36px;height:36px;padding:0 8px}
+ .lampen{padding:0 8px;gap:4px;height:36px}
+ .suche{height:36px;padding:0 10px}
+ .bottomnav{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));background:var(--fl);border-top:1px solid var(--linie);padding-bottom:env(safe-area-inset-bottom,0px)}
+ .bottomnav button{border:0;background:transparent;padding:8px 2px;font-size:.72rem;display:flex;flex-direction:column;align-items:center;gap:2px;color:var(--leise)}
+ .bottomnav button[aria-current="true"]{color:var(--akzent);font-weight:700}
+ .marke span,.kopf .rund .t{display:none}
+ .kopf{gap:6px;padding:8px 10px}
+ .app:not([data-ansicht="lesen"]) .fab{position:fixed;right:16px;bottom:calc(72px + env(safe-area-inset-bottom,0px));display:flex}
+}
+.fab{border-radius:16px;padding:14px 18px;font-weight:700;align-items:center;gap:8px}
+</style>
+<!-- DIE EIGENE SBKIM-SCHUBLADE — muss vor jedem Modul stehen: Modul 01 liest
+     den Wert BEIM LADEN. Fehlt er, landet der Knoten in der geteilten
+     Schublade `sbkim` (Sage LEHREN § 4, Falle 1). -->
+<script>window.SBKIM_DB_SUFFIX = "sendepruefer";</script>
+</head>
+<body>
+<div class="app" id="app" data-ansicht="liste">
+ <header class="kopf">
+  <div class="marke"><img class="marke-bild" src="icons/marke-72.png" width="36" height="36" alt=""><span>Sende-Prüfer</span></div>
+  <!-- Netz-Leiste (Klaus 2026-09-29): fest in der Kopfzeile, nichts fliegt.
+       Breit: Lampen mit Namen, Siegel und Mycel-Blase daneben. Am Handy nur
+       die drei Punkte; ein Tipp klappt den Rest unter der Leiste auf. -->
+  <div class="netzleiste" id="netzleiste" data-offen="0">
+   <button class="lampen" id="lampen" type="button" aria-expanded="false" aria-controls="netz-mehr" title="SBKIM-Knoten: lebt · verkehr · fremd — tippen zeigt Siegel und Netz">
+    <span class="lamp" id="lamp-alive" title="lebt — eigene Identität geladen"><span class="lamp-t">lebt</span></span>
+    <span class="lamp" id="lamp-traffic" title="verkehr — grün, solange am Relais gelauscht wird"><span class="lamp-t">verkehr</span></span>
+    <span class="lamp" id="lamp-fremd" title="fremd — rot nur bei echtem Fremdzugriff"><span class="lamp-t">fremd</span></span>
+   </button>
+   <span class="netz-mehr" id="netz-mehr">
+    <span class="lampen-legende" aria-hidden="true"><span class="lamp" data-lampe-kopie="lamp-alive">lebt</span><span class="lamp" data-lampe-kopie="lamp-traffic">verkehr</span><span class="lamp" data-lampe-kopie="lamp-fremd">fremd</span></span>
+    <span class="siegel-platz" id="siegel-platz"></span>
+    <span class="mycel-platz" data-sbkim-mycel-platz></span>
+   </span>
+  </div>
+  <label class="suche"><svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><circle cx="7" cy="7" r="5" stroke="currentColor" stroke-width="1.6" fill="none"/><path d="M11 11l3.5 3.5" stroke="currentColor" stroke-width="1.6"/></svg><input id="suche" placeholder="Suchen" aria-label="In E-Mails suchen"></label>
+  <button class="rund" id="einfuegen" type="button" title="Eine empfangene Mail einfügen (Text oder .eml)">📥<span class="t"> Mail einfügen</span></button>
+  <button class="rund" id="schild" type="button" data-an="0" title="Schreib-Helfer und KI-Schreibhilfe des Browsers von den Schreibfeldern fernhalten"><span aria-hidden="true">🛡</span><span class="t" id="schild-text"> Abschirmen</span><span class="zahl" id="schild-zahl" hidden></span></button>
+  <button class="rund" id="thema" type="button" title="Zwischen hellem und dunklem Thema wechseln"><span id="thema-zeichen" aria-hidden="true">☀</span><span class="t" id="thema-text"> Hell</span></button>
+  <a class="rund" id="hilfe" href="handbuch.html" aria-label="Handbuch: was der Sende-Prüfer kann und was er tut" title="Handbuch: was der Sende-Prüfer kann und was er tut">?</a>
+  <button class="rund" id="menue" type="button" aria-label="Menü: Beispiele, Selbsttest, Anleitung" title="Beispiele, Selbsttest, Anleitung">⚙</button>
+ </header>
+ <div class="bannerplatz">
+ <p class="banner fremd" id="fremd-banner" data-fremd-banner hidden><span id="fremd-banner-text"></span> <button class="knopf haupt" id="fremd-schirmen" type="button">🛡 Jetzt abschirmen</button> <button class="knopf" id="fremd-mehr" type="button">Was heißt das?</button> <button class="knopf" id="fremd-weg" type="button" aria-label="Meldung ausblenden">✕</button></p>
+ <p class="banner" id="modul-fehlt" data-modul-fehlt hidden>Der Prüfkern (modules/25_pseudonym.js) wurde nicht geladen. Deshalb wird nichts erkannt, nichts kopiert und nichts gesendet. Laden Sie die Seite neu; liegt sie als Datei vor, muss der Ordner „modules“ daneben liegen.</p>
+ </div>
+ <nav class="ordner" aria-label="Ordner">
+  <button class="neu" id="neu" type="button"><svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true"><path d="M3 15l1-4 8-8 3 3-8 8z" stroke="currentColor" stroke-width="1.6" fill="none" stroke-linejoin="round"/></svg><span>Verfassen</span></button>
+  <div id="ordnerliste"></div>
+  <div class="schutzbox"><b>Ihre Mails bleiben auf diesem Gerät</b>An eine KI geht nur, was Sie unter „Was die KI sieht“ lesen, und nur auf Knopfdruck. <span id="speicher-stand"></span></div>
+ </nav>
+ <section class="liste" aria-label="E-Mails">
+  <p class="zweck" data-zweck>Damit die Namen, Nummern und Beträge Ihrer Kunden nicht beim KI-Anbieter landen: jede Mail wird vor dem Senden geprüft, jede solche Angabe durch einen Platzhalter ersetzt, und die Antwort kommt mit den echten Angaben zurück.</p>
+  <div id="liste"></div>
+ </section>
+ <main class="lesen" id="lesen"></main>
+ <nav class="bottomnav" id="bottomnav" aria-label="Ordner"></nav>
+ <button class="fab" id="fab" type="button">✎ Verfassen</button>
+</div>
+
+<dialog id="einfuegen-dialog" aria-labelledby="einf-titel">
+ <h2 id="einf-titel">Eine empfangene Mail einfügen</h2>
+ <p class="gedaempft">Damit Sie auf eine Mail mit KI-Hilfe antworten können, ohne die Angaben darin preiszugeben. Kopieren Sie die ganze Mail samt Kopfzeilen (Von, An, Betreff) aus Ihrem Mail-Programm hierher, oder öffnen Sie eine gespeicherte .eml-Datei. Sie bleibt auf diesem Gerät.</p>
+ <textarea id="einfuegen-text" rows="9" spellcheck="false" aria-label="Text der Mail"></textarea>
+ <p class="meldung" id="einfuegen-meldung"></p>
+ <div class="fuss">
+  <button class="knopf" id="einfuegen-ablage" type="button">Aus der Zwischenablage</button>
+  <label class="knopf">.eml öffnen<input id="einfuegen-datei" type="file" accept=".eml,.txt,message/rfc822,text/plain" hidden></label>
+  <button class="knopf" id="einfuegen-zu" type="button">Abbrechen</button>
+  <button class="knopf haupt" id="einfuegen-ok" type="button">Einfügen</button>
+ </div>
+</dialog>
+
+<dialog id="menue-dialog" aria-labelledby="menue-titel">
+ <h2 id="menue-titel">Menü</h2>
+ <div class="kasten">
+  <h2>Beispiele</h2>
+  <p>Eine erfundene Mail mit Namen, Betrag, Kontonummer und einer möglichen KI-Antwort: so sehen Sie den ganzen Weg, ohne eigene Daten zu nehmen.</p>
+  <button class="knopf" id="beispiel" type="button">Beispiel-E-Mail laden</button>
+ </div>
+ <div class="kasten" id="abschirm-kasten">
+  <h2>🛡 Abschirmung</h2>
+  <p>Damit Schreib-Helfer im Browser (Rechtschreib-Erweiterungen, KI-Seitenleisten, die KI-Schreibhilfe des Browsers) nicht mitlesen, während Sie eine Mail schreiben. Ein Klick oben auf <b>🛡 Abschirmen</b> schaltet an jedem Schreibfeld Rechtschreibprüfung, Autokorrektur und KI-Schreibhilfe aus und sagt den bekannten Erweiterungen „nicht hier“. Ein zweiter Klick hebt es auf.</p>
+  <p id="abschirm-stand" data-abschirm-stand></p>
+  <ul class="funde-liste" id="abschirm-funde"></ul>
+  <p class="gedaempft" data-abschirm-grenze><b>Grenze:</b> eine Erweiterung kann das Signal übergehen, und Programme auf dem Gerät, die den Bildschirm oder die Zwischenablage mitlesen, sieht eine Webseite nicht. Fremde Nachrichten an die Seite weist die Membran immer ab, auch ohne Abschirmung.</p>
+ </div>
+ <details class="kasten" id="selbsttest"><summary>Selbsttest: prüft den Prüfer an einem Köder</summary>
+  <p>Damit Sie sehen, dass die Seite erkennt, was sie verspricht: der Köder enthält jede Sorte genau einmal und drei Zeilen, die nicht gemeldet werden dürfen.</p>
+  <div class="werkzeug"><button class="knopf haupt" id="test-start" type="button">Selbsttest starten</button><label class="knopf">Köder-Datei wählen<input id="test-datei" type="file" accept=".txt" hidden></label></div>
+  <ul class="befunde" id="test-ergebnis"></ul>
+  <p class="meldung" id="test-summe"></p>
+ </details>
+ <div class="werkzeug"><button class="knopf" id="thema-menue" type="button">☀ / 🌙 Hell oder dunkel</button></div>
+ <p><a href="handbuch.html">Handbuch</a> · <a href="anleitung.html">Anleitung und Grenzen</a> · <a href="impressum.html">Impressum</a> · <a href="datenschutz.html">Datenschutz</a></p>
+ <div class="fuss"><button class="knopf haupt" id="menue-zu" type="button">Schließen</button></div>
+</dialog>
+
+<script src="modules/25_pseudonym.js"></script>
+<script src="assets/abschirmung.js"></script>
+<script src="assets/schluesseltresor.js"></script>
+<script src="assets/tresor-ui.js"></script>
+<script src="assets/anbieter.js"></script>
+<script src="assets/ablehnung.js"></script>
+<script src="assets/pruefer-mail.js"></script>
+<script src="assets/inhaltspruefung.js"></script>
+<script src="assets/injection-ui.js"></script>
+<script src="assets/anhaenge.js"></script>
+<script src="assets/sbkim-init.js"></script>
+<script>
+"use strict";
+const ANBIETER = window.SPAnbieter || Object.freeze({});
+const SCHLUESSEL_PREFIX = "sendepruefer_key_";
+const THEMA_KEY = "sendepruefer_thema";
+const SAAT_KEY = "sendepruefer_beispiele_v1";
+const DB_NAME = "SendePruefer1";
+
+/* Datenmaskierung: unverändertes Sage-Modul 25, SHA-gepinnt. */
+const P = window.SbkimPseudonym || null;
+const istIban = (s) => !!P && P.isIban(s);
+function namenListe(roh) {
+  return String(roh || "").split(/[\n,;]/).map((n) => n.trim()).filter((n) => n.length >= 2);
+}
+function finde(text, namen) {
+  if (!P) return [];
+  return P.find(text, { values: namen }).map((f) => ({ start: f.start, ende: f.end, wert: f.value, sorte: f.type, zeile: f.line }));
+}
+function verdecke(text, namen) {
+  if (!P) return { text: "", zuordnung: new Map(), treffer: [] };
+  const r = P.pseudonymize(text, { values: namen });
+  const treffer = r.findings.map((f) => ({ start: f.start, ende: f.end, wert: f.value, sorte: f.type, zeile: f.line, platzhalter: f.token }));
+  return { text: r.text, zuordnung: new Map(Object.entries(r.map)), treffer };
+}
+const alsObjekt = (z) => (z instanceof Map ? Object.fromEntries(z) : (z || {}));
+function aufdecken(text, zuordnung) {
+  const o = alsObjekt(zuordnung);
+  if (!P || !Object.keys(o).length) return String(text || "");
+  return P.rehydrate(String(text || ""), o);
+}
+/* Letzte Kontrolle: erkannte Werte dürfen nicht im Ausgang stehen. */
+function enthaeltWert(text, zuordnung) {
+  if (!P) return "(Modul 25 fehlt)";
+  return P.findLeak(text, alsObjekt(zuordnung));
+}
+
+/* Bestehendes Postfach: Speicherung bleibt unverändert. */
+const ORDNER = [
+  { id: "eingang", name: "Eingefügt", hin: "Mails, die Sie beantworten wollen" },
+  { id: "entwurf", name: "Entwürfe", hin: "Was Sie selbst schreiben" },
+  { id: "antwort", name: "KI-Antworten", hin: "Zurück, mit echten Angaben" },
+  { id: "export", name: "Exportiert", hin: "Als .eml gespeichert oder geteilt" },
+];
+const ICON = { eingang: "📥", entwurf: "📝", antwort: "↩", export: "📤" };
+const BITTE = { eingang: "Schreiben Sie eine kurze, freundliche Antwort auf diese E-Mail.",
+  sonst: "Überarbeiten Sie diesen E-Mail-Entwurf: freundlich, klar und kurz." };
+/* Aufgaben an die KI (Klaus 2026-09-29): antippen oder eintragen → ganze Anweisung */
+const AUFGABEN = { eingang: [["💬 Antwort", "eine kurze, freundliche Antwort auf diese E-Mail"],
+  ["🧾 Rechnung", "eine Rechnung zu diesem Auftrag: Positionen mit Menge und Preis, netto, Umsatzsteuer, brutto, zahlbar in 14 Tagen"],
+  ["⏰ Mahnung", "eine höfliche Zahlungserinnerung zur offenen Rechnung mit neuer Frist von 7 Tagen"],
+  ["📋 Angebot", "ein Angebot zu dieser Anfrage: Leistungen mit Preis, Summe, gültig 30 Tage"],
+  ["✅ Auftragsbestätigung", "eine Auftragsbestätigung: was, Preis, Termin"],
+  ["📅 Termin", "eine Antwort mit zwei Terminvorschlägen"]],
+ sonst: [["✎ Überarbeiten", "diesen Entwurf freundlich, klar und kurz"],
+  ["✂ Kürzen", "diesen Entwurf auf das Nötige gekürzt"],
+  ["🎩 Förmlicher", "diesen Entwurf in förmlichem Ton"]] };
+function anweisung(t) {
+  return "Aufgabe: Schreibe " + t + ".\nGrundlage ist die E-Mail oben. Übernimm jeden Platzhalter in ⟦ ⟧ genau so, wie er steht, und erfinde keine Namen, Nummern oder Beträge. Fehlt eine Angabe, schreibe [bitte ergänzen: …]. Gib nur den fertigen Text aus.";
+}
+const EIGENE = "sendepruefer_aufgaben";
+function eigeneAufgaben() { try { return JSON.parse(lies(EIGENE) || "[]"); } catch (_e) { return []; } }
+const SORTE_NAME = { NAME: "Name", MAIL: "E-Mail", TELEFON: "Telefon", IBAN: "IBAN", BETRAG: "Betrag", RECHNUNG: "Rechnung", SCHLUESSEL: "Schlüssel" };
+
+function adrZeile(name, adr) { return name && adr ? name + " <" + adr + ">" : (name || adr || ""); }
+function zerlegeAdresse(s) {
+  s = String(s || "").trim();
+  const m = s.match(/^"?([^"<]*?)"?\s*<([^>]*)>$/);
+  if (m) return { name: m[1].trim(), adr: m[2].trim() };
+  return /^\S+@\S+$/.test(s) ? { name: "", adr: s } : { name: s, adr: "" };
+}
+function ganzeMail(m) {
+  const k = [], v = adrZeile(m.vonName, m.vonAdr), a = adrZeile(m.anName, m.anAdr);
+  if (v) k.push("Von: " + v);
+  if (a) k.push("An: " + a);
+  if (m.betreff) k.push("Betreff: " + m.betreff);
+  return (k.length ? k.join("\n") + "\n\n" : "") + (m.text || "");
+}
+function hinaus(m) { const b = String(m.bitte || "").trim(); return ganzeMail(m) + (b ? "\n\n---\n" + b : ""); }
+function mailNamen(m) {
+  return [...new Set([m.vonName, m.anName, ...namenListe(m.namenExtra)].map((n) => String(n || "").trim()).filter((n) => n.length >= 2))];
+}
+function pruefung(m) { const r = verdecke(hinaus(m), mailNamen(m)); return window.SPInhalt ? SPInhalt.ausgang(r, ganzeMail(m), m.bitte) : r; }
+function klarAntwort(m) {
+  if (!m.antwortRoh) return "";
+  if (m.verworfen) return m.antwortRoh;
+  return aufdecken(m.antwortRoh, m.zuordnung || pruefung(m).zuordnung);
+}
+const bearbeitbar = (m) => m.ordner !== "eingang";
+const neueId = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
+const re = (b) => (/^(re|aw):/i.test(b || "") ? b : "Re: " + (b || ""));
+
+/* Beispiele enthalten ausschließlich erfundene Daten. */
+const BEISPIELE = [
+  { bid: "petra", ordner: "eingang", vonName: "Petra Beispiel", vonAdr: "petra.beispiel@musterbau.example", anAdr: "buchhaltung@beispiel-firma.example",
+    betreff: "Rechnung RE-2026-04871 noch offen", namenExtra: "Musterbau GmbH, Beispiel",
+    text: "Hallo zusammen,\n\ndie Musterbau GmbH hat unsere Rechnung RE-2026-04871 über 1.248,50 EUR noch nicht bezahlt. Überwiesen werden soll auf DE89 3704 0044 0532 0130 00. Frau Beispiel ist unter +49 170 1234567 erreichbar.\n\nBitte schreib mir eine freundliche Zahlungserinnerung an Frau Beispiel.",
+    antwortRoh: "Sehr geehrte Frau ⟦NAME-3⟧,\n\nunsere Rechnung ⟦RECHNUNG-1⟧ über ⟦BETRAG-1⟧ ist noch offen. Bitte überweisen Sie den Betrag auf ⟦IBAN-1⟧. Bei Fragen erreichen Sie uns unter ⟦MAIL-2⟧.\n\nMit freundlichen Grüßen" },
+  { bid: "jonas", ordner: "eingang", vonName: "Jonas Beispielmann", vonAdr: "j.beispielmann@holzwurm.example",
+    betreff: "Anfrage Beschriftung Transporter", namenExtra: "Tischlerei Holzwurm",
+    text: "Guten Tag,\n\nwir von der Tischlerei Holzwurm möchten zwei Transporter beschriften lassen, Logo und Telefonnummer auf beiden Seiten. Ihr letztes Angebot lag bei 2.380,00 EUR. Geht das bis Ende Oktober?\n\nRückruf gern unter +49 151 7654321.\n\nViele Grüße\nJonas Beispielmann",
+    antwortRoh: "Guten Tag ⟦NAME-1⟧,\n\nvielen Dank für Ihre Anfrage. Die Beschriftung beider Transporter schaffen wir bis Ende Oktober. Der Preis von ⟦BETRAG-1⟧ gilt weiterhin.\n\nIch rufe Sie morgen unter ⟦TELEFON-1⟧ an, um einen Termin zu vereinbaren.\n\nMit freundlichen Grüßen" },
+  { bid: "eva", ordner: "entwurf", anName: "Druckerei Mustermann", anAdr: "info@druck-mustermann.example",
+    betreff: "Lieferadresse für Auftrag A-7781", namenExtra: "Eva Muster",
+    text: "Hallo,\n\nbitte liefern Sie Auftrag A-7781 nicht an uns, sondern direkt an Eva Muster, Tel. +49 30 1234567, eva.muster@beispiel.example.\n\nDanke und Gruß", antwortRoh: "" },
+];
+function beispielMail(b) {
+  const m = Object.assign({ vonName: "", vonAdr: "", anName: "", anAdr: "" }, b, { id: neueId(), beispiel: true, ungelesen: b.ordner === "eingang", zeit: new Date().toISOString() });
+  m.bitte = m.ordner === "eingang" ? BITTE.eingang : BITTE.sonst;
+  return m;
+}
+
+/* ══ SPEICHER — nur auf diesem Gerät (IndexedDB). Geht es nicht (privates
+   Fenster, gesperrt), lebt das Postfach im Fenster weiter und die Seite sagt
+   das. Nichts davon geht ins Netz. */
+let DB = null, MAILS = [];
+function dbAuf() {
+  return new Promise((res) => {
+    try {
+      const q = indexedDB.open(DB_NAME, 1);
+      q.onupgradeneeded = () => q.result.createObjectStore("mails", { keyPath: "id" });
+      q.onsuccess = () => res(q.result); q.onerror = () => res(null); q.onblocked = () => res(null);
+    } catch (_e) { res(null); }
+  });
+}
+function dbTx(art, f) {
+  return new Promise((res) => {
+    if (!DB) return res(null);
+    try { const t = DB.transaction("mails", art); const r = f(t.objectStore("mails")); t.oncomplete = () => res(r && r.result); t.onerror = () => res(null); }
+    catch (_e) { res(null); }
+  });
+}
+const merke = new Map();
+function speichern(m) {
+  clearTimeout(merke.get(m.id));
+  merke.set(m.id, setTimeout(() => { merke.delete(m.id); dbTx("readwrite", (s) => s.put(m)); }, 250));
+}
+function jetztSpeichern(m) { clearTimeout(merke.get(m.id)); merke.delete(m.id); return dbTx("readwrite", (s) => s.put(m)); }
+function lies(k) { try { return localStorage.getItem(k) || ""; } catch (_e) { return ""; } }
+function schreib(k, v) { try { if (v) localStorage.setItem(k, v); else localStorage.removeItem(k); } catch (_e) {} }
+
+/* ══ .eml — ein Entwurf für Outlook, Gmail, Samsung-Mail */
+function b64utf8(s) { const b = new TextEncoder().encode(s); let x = ""; for (const c of b) x += String.fromCharCode(c); return btoa(x); }
+function kodiereWort(s) {
+  s = String(s || "");
+  if (/^[\x20-\x7e]*$/.test(s)) return s;
+  const teile = []; let t = "";
+  for (const z of s) { if (new TextEncoder().encode(t + z).length > 42) { teile.push(t); t = ""; } t += z; }
+  if (t) teile.push(t);
+  return teile.map((x) => "=?UTF-8?B?" + b64utf8(x) + "?=").join("\r\n ");
+}
+function emlBauen(m) {
+  const an = m.anName ? (/^[\x20-\x7e]*$/.test(m.anName) ? '"' + m.anName.replace(/["\\]/g, "") + '"' : kodiereWort(m.anName)) + " <" + (m.anAdr || "") + ">" : (m.anAdr || "");
+  const koerper = String(m.text || "").replace(/\r?\n/g, "\r\n");
+  return ["To: " + an, "Subject: " + kodiereWort(m.betreff || ""), "Date: " + new Date().toUTCString().replace("GMT", "+0000"),
+    "MIME-Version: 1.0", "Content-Type: text/plain; charset=utf-8", "Content-Transfer-Encoding: 8bit", "X-Unsent: 1", "", koerper].join("\r\n");
+}
+function emlName(m) { return (String(m.betreff || "E-Mail").replace(/[^\w\-äöüÄÖÜß ]+/g, "").trim().replace(/\s+/g, "_").slice(0, 60) || "E-Mail") + ".eml"; }
+
+/* ══ .eml LESEN — Kopfzeilen, kodierte Wörter, Quoted-Printable, Base64,
+   multipart (der erste text/plain-Teil, sonst text/html ohne Tags). */
+function dekodBytes(bytes, cs) { try { return new TextDecoder(cs || "utf-8").decode(bytes); } catch (_e) { return new TextDecoder("utf-8").decode(bytes); } }
+function vonB64(s) { const b = atob(String(s).replace(/[^A-Za-z0-9+/=]/g, "")); return Uint8Array.from(b, (c) => c.charCodeAt(0)); }
+function vonQP(s, wort) {
+  if (wort) s = s.replace(/_/g, " ");
+  s = s.replace(/=\r?\n/g, "");
+  const out = []; for (let i = 0; i < s.length; i++) {
+    if (s[i] === "=" && /^[0-9A-F]{2}$/i.test(s.substr(i + 1, 2))) { out.push(parseInt(s.substr(i + 1, 2), 16)); i += 2; }
+    else { const b = new TextEncoder().encode(s[i]); out.push(...b); }
+  }
+  return Uint8Array.from(out);
+}
+function kopfWort(s) {
+  return String(s || "").replace(/=\?([^?]+)\?([BbQq])\?([^?]*)\?=(\s+(?==\?))?/g, (_a, cs, art, t) =>
+    dekodBytes(/b/i.test(art) ? vonB64(t) : vonQP(t, true), cs));
+}
+function kopfTeilen(roh) {
+  const i = roh.search(/\r?\n\r?\n/);
+  const kopf = (i < 0 ? roh : roh.slice(0, i)).replace(/\r?\n[ \t]+/g, " ");
+  const k = {};
+  for (const z of kopf.split(/\r?\n/)) { const m = z.match(/^([A-Za-z\-]+):\s*(.*)$/); if (m) k[m[1].toLowerCase()] = m[2]; }
+  return { k, rumpf: i < 0 ? "" : roh.slice(i).replace(/^\r?\n\r?\n/, "") };
+}
+function teilText(k, rumpf) {
+  const typ = (k["content-type"] || "text/plain").toLowerCase();
+  const grenze = (k["content-type"] || "").match(/boundary="?([^";]+)"?/i);
+  if (/^multipart\//.test(typ) && grenze) {
+    const teile = rumpf.split("--" + grenze[1]).slice(1).filter((t) => !/^--/.test(t)).map((t) => kopfTeilen(t.replace(/^\r?\n/, "")));
+    let html = "";
+    for (const t of teile) {
+      const x = teilText(t.k, t.rumpf);
+      if (x.art === "plain" && x.text.trim()) return x;
+      if (x.art === "html" && !html) html = x.text;
+    }
+    return { art: "plain", text: html };
+  }
+  const cte = (k["content-transfer-encoding"] || "").toLowerCase();
+  const cs = ((k["content-type"] || "").match(/charset="?([^";]+)"?/i) || [])[1];
+  let text = cte === "base64" ? dekodBytes(vonB64(rumpf), cs) : cte === "quoted-printable" ? dekodBytes(vonQP(rumpf), cs) : rumpf;
+  if (/text\/html/.test(typ)) {
+    const d = new DOMParser().parseFromString(text, "text/html");
+    d.querySelectorAll("script,style").forEach((e) => e.remove());
+    d.querySelectorAll("br").forEach((e) => e.replaceWith("\n"));
+    d.querySelectorAll("p,div,tr").forEach((e) => e.append("\n"));
+    return { art: "html", text: (d.body.textContent || "").replace(/\n{3,}/g, "\n\n").trim() };
+  }
+  return { art: /text\/plain/.test(typ) ? "plain" : "anders", text };
+}
+/* Liest eine rohe .eml ODER einen eingefügten Text. Eingefügt wird oft ohne
+   Kopfzeilen oder mit deutschen (Von/An/Betreff) — beides geht. */
+function mailLesen(roh) {
+  roh = String(roh || "").replace(/^\uFEFF/, "");
+  const erste = roh.split(/\r?\n/, 1)[0];
+  if (/^(from|to|subject|date|received|return-path|message-id|mime-version|delivered-to|x-[\w-]+):/i.test(erste)) {
+    const { k, rumpf } = kopfTeilen(roh);
+    const v = zerlegeAdresse(kopfWort(k.from)), a = zerlegeAdresse(kopfWort((k.to || "").split(/,(?=(?:[^"]*"[^"]*")*[^"]*$)/)[0]));
+    return { vonName: v.name, vonAdr: v.adr, anName: a.name, anAdr: a.adr, betreff: kopfWort(k.subject || ""), text: teilText(k, rumpf).text.replace(/\r\n/g, "\n").trim() };
+  }
+  const m = { vonName: "", vonAdr: "", anName: "", anAdr: "", betreff: "", text: "" };
+  const zeilen = roh.replace(/\r\n/g, "\n").split("\n");
+  let i = 0;
+  for (; i < zeilen.length; i++) {
+    const z = zeilen[i].match(/^(Von|An|Betreff|Datum|Gesendet|Cc):\s*(.*)$/i);
+    if (!z) break;
+    const w = z[1].toLowerCase();
+    if (w === "von") { const a = zerlegeAdresse(z[2]); m.vonName = a.name; m.vonAdr = a.adr; }
+    else if (w === "an") { const a = zerlegeAdresse(z[2]); m.anName = a.name; m.anAdr = a.adr; }
+    else if (w === "betreff") m.betreff = z[2].trim();
+  }
+  m.text = zeilen.slice(i).join("\n").trim();
+  return m;
+}
+
+/* ══ DIE OBERFLÄCHE */
+const $ = (id) => document.getElementById(id);
+function el(tag, attrs, ...kinder) {
+  const e = document.createElement(tag);
+  for (const k in attrs || {}) {
+    const v = attrs[k]; if (v == null || v === false) continue;
+    if (k === "class") e.className = v; else if (k.startsWith("on")) e.addEventListener(k.slice(2), v); else e.setAttribute(k, v === true ? "" : v);
+  }
+  for (const c of kinder) if (c != null) e.append(c);   // Text ist immer Text, nie HTML
+  return e;
+}
+const FARBEN = ["#0e6b72", "#8a4fb5", "#b5533c", "#3c6fb5", "#4f8a3a"];
+function avatar(name, id) {
+  let h = 0; for (const c of String(id)) h = (h * 31 + c.charCodeAt(0)) >>> 0;
+  return el("span", { class: "av", style: "background:" + FARBEN[h % FARBEN.length], "aria-hidden": "true" }, (String(name || "?").trim().charAt(0) || "?").toUpperCase());
+}
+function zeitText(iso) {
+  const d = new Date(iso), h = new Date();
+  if (isNaN(d)) return "";
+  return d.toDateString() === h.toDateString() ? d.toTimeString().slice(0, 5) : d.getDate() + "." + (d.getMonth() + 1) + ".";
+}
+const wer = (m) => (m.ordner === "eingang" ? (m.vonName || m.vonAdr) : "An: " + (m.anName || m.anAdr || "…")) || "(ohne Absender)";
+let st = { ordner: "eingang", id: null, sicht: "original", ki: false };
+const aktuell = () => MAILS.find((m) => m.id === st.id) || null;
+
+function zeichneOrdner() {
+  const box = $("ordnerliste"), bn = $("bottomnav");
+  box.replaceChildren(); bn.replaceChildren();
+  for (const o of ORDNER) {
+    const n = MAILS.filter((m) => m.ordner === o.id).length;
+    const geh = () => { st.ordner = o.id; st.id = null; $("app").dataset.ansicht = "liste"; alles(); };
+    box.append(el("button", { class: "ord", type: "button", "data-ordner": o.id, "aria-current": String(st.ordner === o.id), title: o.hin, onclick: geh },
+      el("span", { "aria-hidden": "true" }, ICON[o.id]), el("span", { class: "t" }, o.name), el("span", { class: "zahl" }, String(n))));
+    bn.append(el("button", { type: "button", "data-ordner": o.id, "aria-current": String(st.ordner === o.id), onclick: geh },
+      el("span", { "aria-hidden": "true" }, ICON[o.id]), o.name));
+  }
+}
+function schutzChip(n) {
+  return n ? el("span", { class: "chip", "data-anzahl-chip": n }, "🛡 " + n + " Angabe(n) werden verdeckt")
+    : el("span", { class: "chip gut", "data-anzahl-chip": 0 }, "✓ keine Angabe erkannt");
+}
+function zeichneListe() {
+  const o = ORDNER.find((x) => x.id === st.ordner);
+  const q = $("suche").value.trim().toLowerCase();
+  const box = $("liste");
+  box.replaceChildren(el("h2", null, o.name), el("p", { class: "unter" }, o.hin));
+  const mails = MAILS.filter((m) => m.ordner === st.ordner && (!q || ganzeMail(m).toLowerCase().includes(q)))
+    .sort((a, b) => String(b.zeit).localeCompare(String(a.zeit)));
+  if (!mails.length) box.append(el("p", { class: "unter" }, q ? "Keine Mail passt zur Suche." : "Keine E-Mails in diesem Ordner."));
+  for (const m of mails) {
+    box.append(el("button", { class: "zeile" + (m.ungelesen ? " ungelesen" : ""), type: "button", "data-id": m.id, "aria-current": String(st.id === m.id),
+      onclick: () => oeffne(m.id) },
+      avatar(wer(m).replace(/^An: /, ""), m.id), el("span", { class: "wer" }, wer(m)), el("span", { class: "zeit" }, zeitText(m.zeit)),
+      el("span", { class: "betr" }, m.betreff || "(ohne Betreff)"),
+      el("span", { class: "chips" }, schutzChip(pruefung(m).treffer.length), m.beispiel ? el("span", { class: "chip leise" }, "Beispiel · erfunden") : null)));
+  }
+}
+function oeffne(id) {
+  const m = MAILS.find((x) => x.id === id); if (!m) return;
+  st.id = id; st.sicht = "original"; st.ki = !!m.antwortRoh;
+  if (m.ungelesen) { m.ungelesen = false; speichern(m); }
+  $("app").dataset.ansicht = "lesen";
+  alles();
+}
+
+/* Text in Stücke: normal · Fund (Original) · Platzhalter (KI-Fassung). */
+function stueckeOriginal(text, funde) {
+  const f = document.createDocumentFragment(); let pos = 0;
+  for (const t of funde) {
+    if (t.start >= text.length) break;
+    if (t.start > pos) f.append(text.slice(pos, t.start));
+    f.append(el("mark", { class: "fund", title: (SORTE_NAME[t.sorte] || t.sorte) + " → " + t.platzhalter }, t.wert)); pos = t.ende;
+  }
+  if (pos < text.length) f.append(text.slice(pos));
+  return f;
+}
+function stueckeVerdeckt(text) {
+  const f = document.createDocumentFragment(), rx = /⟦([A-ZÄÖÜ]+)-(\d+)⟧/g; let pos = 0, m;
+  while ((m = rx.exec(text))) { if (m.index > pos) f.append(text.slice(pos, m.index)); f.append(el("span", { class: "tok", title: SORTE_NAME[m[1]] || m[1] }, m[0])); pos = rx.lastIndex; }
+  if (pos < text.length) f.append(text.slice(pos));
+  return f;
+}
+
+function fliegen(von) {
+  const ziel = document.querySelector(".marke-bild");
+  if (!ziel || !ziel.checkVisibility() || matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+  const z = ziel.getBoundingClientRect();
+  const k = el("img", { class: "flug", src: "icons/sende-pruefer-bild.webp", alt: "", "data-flug": "" });
+  Object.assign(k.style, { left: von.left + "px", top: von.top + "px", width: von.width + "px", height: von.height + "px" });
+  document.body.append(k);
+  const dx = z.left - von.left, dy = z.top - von.top, f = z.width / von.width;
+  const a = k.animate([{ transform: "none", opacity: 1 }, { transform: `translate(${dx}px,${dy}px) scale(${f})`, opacity: .85 }],
+    { duration: 650, easing: "cubic-bezier(.5,0,.2,1)", transformOrigin: "0 0" });
+  k.style.transformOrigin = "0 0";
+  const weg = () => k.remove(); a.onfinish = weg; a.oncancel = weg; setTimeout(weg, 1500);
+  ziel.animate([{ transform: "scale(1)" }, { transform: "scale(1.25)" }, { transform: "scale(1)" }], { duration: 400, delay: 600 });
+}
+
+function zeichneLesen() {
+  const box = $("lesen");
+  const altBild = box.querySelector(".leer-bild");
+  const von = altBild && altBild.checkVisibility() ? altBild.getBoundingClientRect() : null;
+  box.replaceChildren();
+  const m = aktuell();
+  if (!m) { box.append(el("div", { class: "leer" },
+    el("span", { class: "bild-buehne", "data-licht": "" }, el("img", { class: "leer-bild", src: "icons/sende-pruefer-bild.webp", width: "640", height: "640", alt: "Sende-Prüfer: ein Brief geht durch ein Schutzschild, persönliche Angaben werden zu Platzhaltern", decoding: "async" })),
+    el("p", {}, MAILS.length ? "Wählen Sie eine E-Mail." : "Das Postfach ist leer. Fügen Sie eine Mail ein (📥) oder verfassen Sie eine."))); return; }
+  if (von) requestAnimationFrame(() => fliegen(von));
+  const r = pruefung(m);
+  box.append(el("div", { class: "werkzeug" },
+    el("button", { class: "knopf zurueck", type: "button", onclick: () => { $("app").dataset.ansicht = "liste"; } }, "← Zurück"),
+    el("div", { class: "umschalter", role: "group", "aria-label": "Ansicht" },
+      el("button", { type: "button", "data-sicht": "original", "aria-pressed": String(st.sicht === "original"), onclick: () => { st.sicht = "original"; zeichneLesen(); } }, "Original"),
+      el("button", { type: "button", "data-sicht": "ki", "aria-pressed": String(st.sicht === "ki"), onclick: () => { st.sicht = "ki"; zeichneLesen(); } }, "Was die KI sieht")),
+    el("span", { id: "chip-ort" }, schutzChip(r.treffer.length)),
+    el("button", { class: "knopf klein", id: "loeschen", type: "button", title: "Diese Mail löschen", onclick: () => loeschen(m) }, "🗑")));
+  if (m.beispiel) box.append(el("p", { class: "beispiel-hin", id: "beispiel-meldung", "data-beispiel-meldung": true },
+    "Beispiel: diese Mail samt Namen und KI-Antwort ist erfunden. So sehen Sie, was verdeckt wird und wie die echten Angaben zurückkommen. Sie können alles überschreiben oder die Mail löschen."));
+  if (st.sicht === "ki") {
+    box.append(el("p", { class: "gedaempft" }, "Dieser Text geht hinaus: Schutzinstruktion, Ihr Auftrag und der Mailinhalt in getrennten JSON-Feldern. Erkannte Angaben sind Platzhalter. Beim API-Senden wird die Schutzinstruktion zusätzlich als eigene System-Nachricht übergeben."),
+      el("pre", { class: "blatt ki", id: "verdeckt" }, stueckeVerdeckt(r.text)));
+  } else if (bearbeitbar(m)) {
+    const feld = (id, name, wert, beim) => el("div", { class: "feldzeile" }, el("label", { for: id }, name),
+      el("input", { id, value: wert, autocomplete: "off", spellcheck: "false", oninput: (e) => { beim(e.target.value); geaendert(m); } }));
+    const ta = el("textarea", { class: "blatt", id: "text", "aria-label": "Text der E-Mail", spellcheck: "true", oninput: (e) => { m.text = e.target.value; geaendert(m); } });
+    ta.value = m.text || "";
+    box.append(feld("an", "An", adrZeile(m.anName, m.anAdr), (v) => { const a = zerlegeAdresse(v); m.anName = a.name; m.anAdr = a.adr; }),
+      feld("betreff", "Betreff", m.betreff || "", (v) => { m.betreff = v; }), ta);
+  } else {
+    box.append(el("h1", { class: "betreff" }, m.betreff || "(ohne Betreff)"),
+      el("div", { class: "absender" }, avatar(m.vonName || m.vonAdr, m.id),
+        el("div", null, el("div", { style: "font-weight:600" }, m.vonName || m.vonAdr || "(ohne Absender)"),
+          el("div", { class: "adr" }, [m.vonAdr, m.anAdr ? "an " + adrZeile(m.anName, m.anAdr) : "", zeitText(m.zeit)].filter(Boolean).join(" · ")))),
+      el("div", { class: "blatt" }, stueckeOriginal(ganzeMail(m), r.treffer)));
+  }
+  const nx = el("input", { id: "namen", value: String(m.namenExtra || "").replace(/\s*\n\s*/g, ", "), autocomplete: "off", spellcheck: "false", oninput: (e) => { m.namenExtra = e.target.value; geaendert(m); } });
+  box.append(el("div", { class: "namen" }, el("label", { for: "namen" }, "Weitere Namen, die nicht hinausgehen sollen"),
+    el("p", { class: "gedaempft", style: "margin:0 0 4px", "data-namen-zweck": true }, "Tragen Sie Personen- und Firmennamen ein, die im Text vorkommen (durch Komma getrennt): sie werden dann ebenfalls verdeckt. Die Namen aus Von und An sind schon dabei."),
+    nx, el("p", { class: "meldung warn", id: "namen-hinweis", "data-ohne-namen": true }, "Es sind keine Namen bekannt, deshalb wird kein Name verdeckt."),
+    el("p", { class: "gedaempft", id: "namen-auto" })));
+  box.append(el("div", { class: "funde", id: "funde" }),
+    el("details", null, el("summary", null, "Was gefunden wurde: ", el("b", { id: "anzahl" }, "0"), " Angabe(n), mit Zeile"),
+      el("ul", { class: "befunde", id: "befunde" }),
+      el("p", { class: "gedaempft" }, "Erkannt werden Zugangsschlüssel, Mailadressen, Telefonnummern mit Ländervorwahl, Kontonummern (IBAN mit stimmender Prüfziffer), Beträge mit Währung, Rechnungs- und Kundennummern und die Namen oben. Eine Telefonnummer ohne Ländervorwahl und gewöhnliche Links bleiben stehen.")));
+  const akt = el("div", { class: "werkzeug", style: "margin-top:16px" },
+    el("button", { class: "knopf haupt", id: "ki-oeffnen", type: "button", onclick: () => { st.ki = true; zeichneLesen(); $("s-ki").scrollIntoView({ block: "start" }); } },
+      m.ordner === "eingang" ? "✦ Mit KI beantworten" : "✦ Mit KI überarbeiten"));
+  if (m.ordner !== "eingang") akt.append(el("button", { class: "knopf", id: "eml", type: "button", onclick: () => emlSpeichern(m) }, "⤓ Als .eml speichern"),
+    el("button", { class: "knopf", id: "teilen", type: "button", onclick: () => teilen(m) }, "📤 Teilen"));
+  box.append(akt, el("p", { class: "meldung", id: "aktion-meldung", "aria-live": "polite" }));
+  if (st.ki) box.append(kiKasten(m));
+  aktualisiere(m);
+}
+
+function kiKasten(m) {
+  const bitte = el("textarea", { id: "bitte", rows: "4", spellcheck: "true", oninput: (e) => { m.bitte = e.target.value; geaendert(m); } });
+  bitte.value = m.bitte || "";
+  const setze = (t) => { m.bitte = bitte.value = anweisung(t); geaendert(m); };
+  const eigen = el("input", { id: "aufgabe-eigen", placeholder: "z. B. Rechnung für die Schrankmontage", onkeydown: (e) => { if (e.key === "Enter") setze(eigen.value.trim() || "…"); } });
+  const reihe = el("div", { class: "chips", id: "aufgaben" });
+  const merke = (l) => { schreib(EIGENE, JSON.stringify(l)); reiheZeichnen(); };
+  const reiheZeichnen = () => { const ei = eigeneAufgaben(); reihe.replaceChildren(...AUFGABEN[m.ordner === "eingang" ? "eingang" : "sonst"].concat(ei).map(([n, t], i) =>
+    el("button", { class: "chip leise", type: "button", "data-aufgabe": n, onclick: () => setze(t) }, n,
+      ei.some((x) => x[0] === n) ? el("span", { "data-weg": n, title: "Vergessen", onclick: (e) => { e.stopPropagation(); merke(ei.filter((x) => x[0] !== n)); } }, " ✕") : ""))); };
+  reiheZeichnen();
+  const aufgabe = el("div", null, el("label", { for: "aufgabe-eigen" }, "Was soll die KI tun? Antippen oder selbst eintragen"), reihe,
+    el("div", { class: "werkzeug", style: "margin:8px 0 0" }, eigen,
+      el("button", { class: "knopf", id: "aufgabe-bauen", type: "button", onclick: () => setze(eigen.value.trim() || "…") }, "Anweisung bauen"),
+      el("button", { class: "knopf", id: "aufgabe-merken", type: "button", onclick: () => { const t = eigen.value.trim(), n = "★ " + t.slice(0, 24); if (t) merke(eigeneAufgaben().filter((x) => x[0] !== n).concat([[n, t]])); } }, "Als Knopf merken")));
+  const auswahl = el("select", { id: "anbieter", onchange: () => { schreib(SCHLUESSEL_PREFIX + "wahl", auswahl.value); anbieterZeigen(); } });
+  for (const [k, a] of Object.entries(ANBIETER)) auswahl.append(el("option", { value: k }, a.name));
+  auswahl.value = ANBIETER[lies(SCHLUESSEL_PREFIX + "wahl")] ? lies(SCHLUESSEL_PREFIX + "wahl") : Object.keys(ANBIETER)[0] || "";
+  const ein = el("textarea", { id: "antwort-ein", rows: "4", spellcheck: "false", oninput: (e) => { m.antwortRoh = e.target.value; geaendert(m, true); } });
+  ein.value = m.antwortRoh || "";
+  const schl = el("input", { id: "schluessel", type: "password", autocomplete: "off", spellcheck: "false" });
+  const k = el("section", { class: "kasten", id: "s-ki" },
+    el("h2", null, "Mit KI"),
+    aufgabe, el("label", { for: "bitte" }, "Ihre Anweisung an die KI (frei änderbar, wird mit verdeckt)"), bitte,
+    el("p", { class: "gedaempft" }, "Hinaus geht nur die verdeckte Fassung (siehe „Was die KI sieht“), nur auf Knopfdruck und nur an die Adresse neben dem Senden-Knopf."),
+    el("div", { class: "zwei" },
+      el("section", { class: "kasten", id: "s-kopieren" }, el("h2", null, "Kopieren"),
+        el("p", { "data-weg-zweck": "kopieren" }, "Für Ihr eigenes KI-Abo: einfügen, wo Sie ohnehin arbeiten, ohne Schlüssel und ohne zusätzliche Kosten."),
+        el("button", { class: "knopf haupt", id: "kopieren", type: "button", onclick: () => kopieren(m) }, "Verdeckte Fassung kopieren"),
+        el("p", { class: "meldung", id: "kopier-meldung" }),
+        el("label", { for: "antwort-ein" }, "Antwort der KI hier einfügen"), ein),
+      el("section", { class: "kasten", id: "s-senden" }, el("h2", null, "Senden"),
+        el("p", { "data-weg-zweck": "senden" }, "Ohne Fenster zu wechseln; es kostet, was Ihr Schlüssel kostet."),
+        el("label", { for: "anbieter" }, "Anbieter"), auswahl,
+        el("label", { for: "schluessel" }, "Ihr Schlüssel für diesen Anbieter"),
+        el("p", { class: "gedaempft", "data-schluessel-zweck": true }, "Damit die Seite die verdeckte Fassung selbst abschickt. Er geht nur an den gewählten Anbieter und wird nie offen gespeichert: aufheben nur verschlossen, mit einem Code."),
+        schl,
+        el("a", { id: "schluessel-holen", target: "_blank", rel: "noopener noreferrer", style: "display:inline-block;margin-top:8px" }, "🔑 Schlüssel beim Anbieter erzeugen\u00a0↗"),
+        el("div", { class: "werkzeug", style: "margin:8px 0 0" },
+          el("button", { class: "knopf haupt", id: "senden", type: "button", onclick: () => senden(m) }, "Senden"),
+          el("button", { class: "knopf", id: "schluessel-weg", type: "button", onclick: schluesselLoeschen }, "Schlüssel löschen")),
+        el("p", { class: "gedaempft" }, "Geht an: ", el("code", { id: "ziel-adresse" })),
+        el("p", { class: "meldung", id: "sende-meldung" }))),
+    el("section", { class: "kasten antwort", id: "s-antwort" },
+      el("h2", null, "Die Antwort, mit Ihren Angaben"),
+      el("p", { class: "gedaempft" }, "Die Platzhalter sind auf diesem Gerät wieder durch die echten Namen, Nummern und Beträge ersetzt."),
+      el("pre", { class: "blatt", id: "antwort-klar" }),
+      el("div", { class: "werkzeug", style: "margin-top:10px" },
+        el("button", { class: "knopf haupt", id: "antwort-ablegen", type: "button", onclick: () => { const a = antwortMail(m); st.ordner = a.ordner; oeffne(a.id); } }, "In KI-Antworten ablegen"),
+        el("button", { class: "knopf", id: "antwort-eml", type: "button", onclick: () => emlSpeichern(antwortMail(m)) }, "⤓ Als .eml speichern"),
+        el("button", { class: "knopf", id: "antwort-teilen", type: "button", onclick: () => teilen(antwortMail(m)) }, "📤 Teilen"),
+        el("button", { class: "knopf", id: "antwort-kopieren", type: "button", onclick: (e) => inAblage(klarAntwort(m), e.currentTarget) }, "Text kopieren")),
+      el("details", null, el("summary", null, "Was die KI sah und schrieb"),
+        el("p", { class: "gedaempft" }, "Gesendet oder kopiert wurde genau dieser Text:"), el("pre", { class: "blatt", id: "gesendet" }),
+        el("p", { class: "gedaempft" }, "Zurück kam:"), el("pre", { class: "blatt", id: "antwort-roh" })),
+      el("div", { class: "werkzeug", style: "margin-top:10px" },
+        el("button", { class: "knopf", id: "verwerfen", type: "button", onclick: () => { m.zuordnung = null; m.verworfen = true; jetztSpeichern(m); aktualisiere(m); } }, "Zuordnung verwerfen"),
+        el("small", { id: "zuordnung-stand" })),
+      el("p", { class: "gedaempft" }, "Die Zuordnung von Platzhalter zu echtem Wert liegt mit der Mail auf diesem Gerät, nirgends sonst. „Zuordnung verwerfen“ löscht sie.")));
+  setTimeout(() => { anbieterZeigen(); window.SPTresor && SPTresor.einbauen(); }, 0);
+  return k;
+}
+
+function geaendert(m, nurAntwort) {
+  if (!nurAntwort) { m.verworfen = false; m.zuordnung = null; }
+  m.zeit = m.zeit || new Date().toISOString();
+  speichern(m); aktualisiere(m); zeichneListe();
+}
+function aktualisiere(m) {
+  const r = pruefung(m), namen = mailNamen(m), auto = [m.vonName, m.anName].filter((n) => String(n || "").trim().length >= 2);
+  const set = (id, f) => { const e = $(id); if (e) f(e); };
+  window.SPInhaltUI && SPInhaltUI.aktualisiere(m, r);
+  window.SPAnhangUI && SPAnhangUI.aktualisiereAngaben(m);
+  set("namen-hinweis", (e) => { e.hidden = namen.length > 0; });
+  set("namen-auto", (e) => { e.textContent = auto.length ? "Aus Von/An: " + auto.join(", ") : ""; });
+  set("chip-ort", (e) => e.replaceChildren(schutzChip(r.treffer.length)));
+  set("anzahl", (e) => { e.textContent = String(r.treffer.length); });
+  set("funde", (e) => {
+    const z = {}; for (const t of r.treffer) z[t.sorte] = (z[t.sorte] || 0) + 1;
+    e.replaceChildren(...Object.keys(z).map((s) => el("span", null, el("b", null, String(z[s])), " " + (SORTE_NAME[s] || s))));
+  });
+  set("befunde", (e) => e.replaceChildren(...r.treffer.map((t) => el("li", { "data-sorte": t.sorte, "data-zeile": t.zeile },
+    el("span", { class: "sorte" }, t.sorte), "Zeile " + t.zeile + ": ", t.wert, el("span", { class: "tok", style: "margin-left:.4rem" }, "→ " + t.platzhalter)))));
+  set("verdeckt", (e) => e.replaceChildren(stueckeVerdeckt(r.text)));
+  set("s-antwort", (e) => { e.hidden = !m.antwortRoh; });
+  set("antwort-klar", (e) => { e.textContent = klarAntwort(m); });
+  set("antwort-roh", (e) => { e.textContent = m.antwortRoh || ""; });
+  set("gesendet", (e) => { e.textContent = m.gesendet || "(noch nichts)"; });
+  set("zuordnung-stand", (e) => {
+    e.textContent = m.verworfen ? "Zuordnung verworfen. Platzhalter werden nicht mehr zurückgesetzt, bis Sie die Mail ändern."
+      : Object.keys(alsObjekt(m.zuordnung || r.zuordnung)).length + " Platzhalter in der Zuordnung";
+  });
+}
+
+/* ══ DIE ZWEI WEGE */
+function bereit(m, meldung) {
+  const r = pruefung(m);
+  if (!P) { meldung("Der Prüfkern fehlt (siehe Hinweis oben)."); return null; }
+  if (!ganzeMail(m).trim()) { meldung("Es steht noch kein Text in dieser Mail."); return null; }
+  if (enthaeltWert(r.text, r.zuordnung)) { meldung("Die Fassung enthält noch einen gefundenen Wert."); return null; }
+  const f = window.SPInhaltUI && SPInhaltUI.freigabe(m, r);
+  if (!f || !f.erlaubt) { meldung(f ? f.grund : "Der Inhaltsprüfer fehlt."); return null; }
+  return r;
+}
+function merkeHinaus(m, r) { m.zuordnung = alsObjekt(r.zuordnung); m.gesendet = r.text; m.verworfen = false; jetztSpeichern(m); }
+async function kopieren(m) {
+  const e = $("kopier-meldung");
+  const r = bereit(m, (t) => { e.className = "meldung warn"; e.textContent = "Nicht kopiert: " + t; });
+  if (!r) return;
+  try {
+    await navigator.clipboard.writeText(r.text);
+    merkeHinaus(m, r); aktualisiere(m);
+    e.className = "meldung gut"; e.textContent = "Kopiert: die verdeckte Fassung, " + r.treffer.length + " Angabe(n) ersetzt. Fügen Sie die Antwort der KI unten ein.";
+  } catch (_e) {
+    e.className = "meldung warn"; e.textContent = "Der Browser hat das Kopieren verweigert. Öffnen Sie „Was die KI sieht“, markieren Sie den Text und kopieren Sie ihn von Hand.";
+  }
+}
+const anbieterJetzt = () => ANBIETER[($("anbieter") || {}).value] || Object.values(ANBIETER)[0];
+const schluesselName = () => SCHLUESSEL_PREFIX + (($("anbieter") || {}).value || "anthropic");
+function anbieterZeigen() {
+  if (!$("anbieter")) return;
+  const a = anbieterJetzt();
+  if (!a) { $("ziel-adresse").textContent = "keine Anbieter-Liste geladen — nur Kopieren geht"; return; }
+  $("ziel-adresse").textContent = a.adresse + " · " + a.modell;
+  $("schluessel-holen").href = a.holen;
+  $("schluessel").value = lies(schluesselName());
+  $("sende-meldung").textContent = "";
+}
+function schluesselLoeschen() {
+  schreib(schluesselName(), ""); $("schluessel").value = "";
+  $("sende-meldung").className = "meldung gut"; $("sende-meldung").textContent = "Der Schlüssel für " + anbieterJetzt().name + " ist gelöscht.";
+}
+function anfrage(a, schluessel, text) {
+  if (a.protokoll === "messages") {
+    return { headers: { "content-type": "application/json", "x-api-key": schluessel,
+        "anthropic-version": "2023-06-01", "anthropic-dangerous-direct-browser-access": "true" },
+      body: { model: a.modell, max_tokens: 4096, system: SPInhalt.SCHUTZ, messages: [{ role: "user", content: text }] } };
+  }
+  return { headers: { "content-type": "application/json", "authorization": "Bearer " + schluessel },
+    body: { [a.grenze || "max_tokens"]: 4096, model: a.modell, messages: [{ role: "system", content: SPInhalt.SCHUTZ }, { role: "user", content: text }] } };
+}
+function antwortText(a, j) {
+  if (a.protokoll === "messages") return (j.content || []).filter((c) => c.type === "text").map((c) => c.text).join("\n");
+  return (((j.choices || [])[0] || {}).message || {}).content || "";
+}
+async function senden(m) {
+  const e = $("sende-meldung"), a = anbieterJetzt(), schluessel = $("schluessel").value.trim();
+  e.className = "meldung warn";
+  if (!a) { e.textContent = "Keine Anbieter-Liste geladen. Nehmen Sie den Kopieren-Weg daneben."; return; }
+  const r = bereit(m, (t) => { e.textContent = "Nicht gesendet: " + t; });
+  if (!r) return;
+  if (!schluessel) { e.textContent = "Es fehlt ein Schlüssel für " + a.name + ". Tragen Sie ihn oben ein, oder nehmen Sie den Kopieren-Weg daneben."; return; }
+  if (a.beginnt && !schluessel.startsWith(a.beginnt)) { e.textContent = "Ein Schlüssel für " + a.name + " beginnt mit " + a.beginnt + ". Der eingetragene tut das nicht."; return; }
+  const q = anfrage(a, schluessel, r.text);
+  merkeHinaus(m, r); aktualisiere(m);
+  e.className = "meldung"; e.textContent = "Wird gesendet an " + a.adresse + " …";
+  try {
+    const H = window.SPAblehnung, init = { method: "POST", headers: q.headers, body: JSON.stringify(q.body) };
+    const antwort = await (H ? H.holen(a.adresse, init, (t) => { e.textContent = t; }) : fetch(a.adresse, init));
+    let j = await antwort.json().catch(() => ({})); if (Array.isArray(j)) j = j[0] || {};
+    if (!antwort.ok) {
+      const grund = (j.error && (j.error.message || j.error.type)) || j.message || ("HTTP " + antwort.status);
+      e.className = "meldung warn"; e.textContent = "Der Anbieter hat abgelehnt (" + antwort.status + "): " + grund
+        + (H ? H.deuten(antwort.status, grund, a.modell) : ""); return;
+    }
+    if (pruefung(m).freigabeKey !== r.freigabeKey) { e.className = "meldung warn"; e.textContent = "Antwort erhalten, aber der Mailinhalt oder Auftrag wurde inzwischen geändert. Die Antwort wurde nicht in die neue Fassung übernommen."; return; }
+    m.antwortRoh = antwortText(a, j);
+    jetztSpeichern(m);
+    if (aktuell() === m) { if ($("antwort-ein")) $("antwort-ein").value = m.antwortRoh; aktualisiere(m); }
+    e.className = "meldung gut"; e.textContent = "Antwort erhalten. Gesendet wurde die verdeckte Fassung mit " + r.treffer.length + " Platzhalter(n).";
+  } catch (x) {
+    e.className = "meldung warn"; e.textContent = "Keine Verbindung zu " + a.adresse + " (" + (x && x.message || x) + ").";
+  }
+}
+
+function antwortMail(m) {
+  let a = MAILS.find((x) => x.id === m.antwortId);
+  const klar = klarAntwort(m);
+  if (!a) {
+    const aus = m.ordner === "eingang";
+    a = { id: neueId(), ordner: "antwort", vonName: "", vonAdr: "", anName: aus ? m.vonName : m.anName, anAdr: aus ? m.vonAdr : m.anAdr,
+      betreff: aus ? re(m.betreff) : m.betreff, text: klar, namenExtra: m.namenExtra || "", bitte: BITTE.sonst, zeit: new Date().toISOString(),
+      bezug: m.id, ausRoh: m.antwortRoh, beispiel: !!m.beispiel };
+    MAILS.push(a); m.antwortId = a.id; jetztSpeichern(m);
+  } else if (a.ausRoh !== m.antwortRoh) { a.text = klar; a.ausRoh = m.antwortRoh; }
+  jetztSpeichern(a);
+  return a;
+}
+function meldeAktion(t, gut) { const e = $("aktion-meldung") || $("sende-meldung"); if (e) { e.className = "meldung " + (gut ? "gut" : "warn"); e.textContent = t; } }
+function exportiert(m) {
+  m.ordner = "export"; m.exportiert = new Date().toISOString(); jetztSpeichern(m);
+  zeichneOrdner(); zeichneListe();
+}
+function emlDatei(m) { return new File([emlBauen(m)], emlName(m), { type: "message/rfc822" }); }
+function emlSpeichern(m) {
+  const f = emlDatei(m), a = document.createElement("a");
+  a.href = URL.createObjectURL(f); a.download = f.name; document.body.append(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(a.href), 4000);
+  window.__letzteEml = { name: f.name, weg: "download" };
+  exportiert(m);
+  meldeAktion("Gespeichert als " + f.name + ". Öffnen Sie die Datei, dann zeigt Ihr Mail-Programm sie als Entwurf.", true);
+}
+/* Teilen gibt Betreff und Text weiter; Anhänge ergänzt assets/anhaenge.js. */
+async function teilen(m) {
+  const d = { title: m.betreff || "E-Mail", text: String(m.text || "") };
+  if (!navigator.share || (navigator.canShare && !navigator.canShare(d))) {
+    emlSpeichern(m); meldeAktion("Dieses Gerät kann hier nicht teilen. Die Mail ist stattdessen als " + emlName(m) + " gespeichert.", true); return;
+  }
+  try {
+    await navigator.share(d);
+    window.__letzteEml = { name: emlName(m), weg: "teilen" };
+    exportiert(m);
+    meldeAktion("Geteilt: Betreff und Text." + (m.anAdr ? " Den Empfänger (" + m.anAdr + ") tragen Sie im Mail-Programm ein." : ""), true);
+  } catch (x) {
+    if (x && x.name === "AbortError") return;
+    meldeAktion("Das Teilen ging nicht (" + (x && x.name || x) + "). Speichern Sie die Mail mit „Als .eml speichern“.", false);
+  }
+}
+async function inAblage(text, knopf) {
+  const alt = knopf.textContent;
+  try { await navigator.clipboard.writeText(text); knopf.textContent = "Kopiert"; } catch (_e) { knopf.textContent = "Bitte markieren und kopieren"; }
+  setTimeout(() => { knopf.textContent = alt; }, 2200);
+}
+function loeschen(m) {
+  if (!confirm("Diese Mail von diesem Gerät löschen?\n\n" + (m.betreff || "(ohne Betreff)"))) return;
+  MAILS = MAILS.filter((x) => x.id !== m.id);
+  dbTx("readwrite", (s) => s.delete(m.id));
+  st.id = null; $("app").dataset.ansicht = "liste"; alles();
+}
+
+/* ══ NEU, EINFÜGEN, BEISPIEL */
+let dateiImport = 0;
+function neueMail() {
+  dateiImport++;
+  const m = { id: neueId(), ordner: "entwurf", vonName: "", vonAdr: "", anName: "", anAdr: "", betreff: "", text: "", namenExtra: "",
+    bitte: BITTE.sonst, zeit: new Date().toISOString() };
+  MAILS.push(m); jetztSpeichern(m); st.ordner = "entwurf"; oeffne(m.id);
+  const f = $("an"); if (f) f.focus();
+}
+function einfuegen(roh) {
+  dateiImport++;
+  const t = String(roh || "").trim();
+  if (!t) { $("einfuegen-meldung").className = "meldung warn"; $("einfuegen-meldung").textContent = "Es steht noch kein Text im Feld."; return; }
+  const m = Object.assign(mailLesen(t), { id: neueId(), ordner: "eingang", namenExtra: "", bitte: BITTE.eingang, zeit: new Date().toISOString() });
+  MAILS.push(m); jetztSpeichern(m);
+  $("einfuegen-dialog").close(); $("einfuegen-text").value = ""; st.ordner = "eingang"; oeffne(m.id);
+  return m;
+}
+$("einfuegen").addEventListener("click", () => { $("einfuegen-meldung").textContent = ""; $("einfuegen-dialog").showModal(); $("einfuegen-text").focus(); });
+$("einfuegen-zu").addEventListener("click", () => $("einfuegen-dialog").close());
+$("einfuegen-ok").addEventListener("click", () => einfuegen($("einfuegen-text").value));
+$("einfuegen-ablage").addEventListener("click", async () => {
+  try { $("einfuegen-text").value = await navigator.clipboard.readText(); }
+  catch (_e) { $("einfuegen-meldung").className = "meldung warn"; $("einfuegen-meldung").textContent = "Der Browser gibt die Zwischenablage nicht her. Tippen Sie lange ins Feld und wählen Sie „Einfügen“."; }
+});
+$("einfuegen-datei").addEventListener("change", async (e) => {
+  const f = e.target.files && e.target.files[0]; e.target.value = "";
+  const lauf = ++dateiImport; let importMail = null;
+  if (f) {
+    try {
+      if (f.size > 25 * 1024 * 1024) throw new Error("Datei über 25 MiB");
+      const roh = await f.text(); if (lauf !== dateiImport) return;
+      const m = importMail = einfuegen(roh), A = window.SPAnhangUI;
+      if (m && A) await A.importiere(m, roh, () => MAILS.includes(m));
+      else if (m) throw new Error("Anhangprüfung fehlt");
+    } catch (_e) { if (lauf === dateiImport || importMail === aktuell()) { const t = "Datei oder Anhänge nicht vollständig importiert: nicht lesbar, größer als 25 MiB oder Anhangprüfung fehlt."; $("einfuegen-meldung").textContent = t; meldeAktion(t, false); } }
+  }
+});
+$("neu").addEventListener("click", neueMail);
+$("fab").addEventListener("click", neueMail);
+$("suche").addEventListener("input", zeichneListe);
+$("menue").addEventListener("click", () => $("menue-dialog").showModal());
+$("menue-zu").addEventListener("click", () => $("menue-dialog").close());
+const istDunkel = () => { const t = document.documentElement.dataset.theme; return t ? t === "dark" : matchMedia("(prefers-color-scheme: dark)").matches; };
+function themaKnopf() {
+  const d = istDunkel();
+  $("thema-zeichen").textContent = d ? "☀" : "🌙"; $("thema-text").textContent = d ? " Hell" : " Dunkel";
+  $("thema").setAttribute("aria-label", d ? "Zum hellen Thema wechseln" : "Zum dunklen Thema wechseln");
+  $("thema").dataset.jetzt = d ? "dunkel" : "hell";
+}
+$("thema-menue").addEventListener("click", () => $("thema").click());
+$("thema").addEventListener("click", () => {
+  document.documentElement.dataset.theme = istDunkel() ? "light" : "dark"; schreib(THEMA_KEY, document.documentElement.dataset.theme);
+  themaKnopf();
+});
+try { matchMedia("(prefers-color-scheme: dark)").addEventListener("change", themaKnopf); } catch (_e) {}
+themaKnopf();
+document.addEventListener("pointermove", (e) => {
+  const k = e.target.closest && e.target.closest(".knopf,.kopf .rund,.neu,.fab"); if (!k) return;
+  const r = k.getBoundingClientRect();
+  k.style.setProperty("--mx", (e.clientX - r.left) + "px"); k.style.setProperty("--my", (e.clientY - r.top) + "px");
+}, { passive: true });
+$("beispiel").addEventListener("click", () => {
+  const b = BEISPIELE[0];
+  for (const alt of MAILS.filter((x) => x.bid === b.bid && x.ordner === "eingang")) { MAILS = MAILS.filter((x) => x !== alt); dbTx("readwrite", (s) => s.delete(alt.id)); }
+  const m = beispielMail(b); MAILS.push(m); jetztSpeichern(m);
+  $("menue-dialog").close(); st.ordner = "eingang"; oeffne(m.id);
+});
+
+function alles() { zeichneOrdner(); zeichneListe(); zeichneLesen(); }
+
+/* ══ SELBSTTEST
+   Liest den Köder (koeder.txt): vor jedem Fall `# ERWARTET: <Sorte>` oder
+   `# ERWARTET: kein Befund`; im Kopf `# BEFUNDE: <Zahl>` und `# NAMEN: …`.
+   Zwei Vorbedingungen werden mitgemessen: der Köder ist geladen, und es gab
+   Marken zu prüfen — sonst wäre ein grünes Ergebnis ein grünes Nichts. */
+function selbsttest(koeder) {
+  const erg = [];
+  const ok = (bed, satz) => erg.push({ ok: !!bed, satz });
+  const zeilen = koeder.split("\n");
+  ok(koeder.length > 200, "der Köder ist geladen (" + koeder.length + " Zeichen, " + zeilen.length + " Zeilen)");
+  const kopfZahl = Number((koeder.match(/^# BEFUNDE: (\d+)/m) || [])[1]);
+  const namen = namenListe((koeder.match(/^# NAMEN: (.+)$/m) || [])[1]);
+  /* Kommentarzeilen werden mit Leerzeichen GLEICHER Länge überschrieben: so
+     bleiben alle Stellen gleich, und die Namen-Liste zählt nicht als Befund. */
+  const inhalt = zeilen.map((z) => (z.startsWith("#") ? " ".repeat(z.length) : z)).join("\n");
+  const v = verdecke(inhalt, namen);
+  const treffer = v.treffer;
+  const jeZeile = new Map();
+  for (const t of treffer) { if (!jeZeile.has(t.zeile)) jeZeile.set(t.zeile, []); jeZeile.get(t.zeile).push(t); }
+  let marken = 0; const erwartetZeilen = new Set(); let erwartetBefunde = 0;
+  zeilen.forEach((z, i) => {
+    const m = z.match(/^# ERWARTET: (.+)$/);
+    if (!m) return;
+    let j = i + 1; while (j < zeilen.length && /^#|^\s*$/.test(zeilen[j])) j++;
+    const nr = j + 1; erwartetZeilen.add(nr); marken++;
+    const hier = jeZeile.get(nr) || [];
+    const soll = m[1].trim();
+    if (soll === "kein Befund") ok(hier.length === 0, "Zeile " + nr + ": kein Befund erwartet, gemeldet " + hier.length);
+    else { erwartetBefunde++; ok(hier.length === 1 && hier[0].sorte === soll, "Zeile " + nr + ": " + soll + " genau einmal (gemeldet: " + (hier.map((t) => t.sorte).join(", ") || "nichts") + ")"); }
+  });
+  ok(marken >= 10, "es gab Marken zu prüfen (" + marken + ")");
+  const ausserhalb = treffer.filter((t) => !erwartetZeilen.has(t.zeile));
+  ok(ausserhalb.length === 0, "außerhalb der Marken nichts gemeldet (" + ausserhalb.length + ")");
+  ok(kopfZahl === treffer.length && kopfZahl === erwartetBefunde, "Kopfzahl " + kopfZahl + " = gemeldet " + treffer.length);
+  const drin = treffer.filter((t) => v.text.includes(t.wert));
+  ok(treffer.length > 0 && drin.length === 0, "die verdeckte Fassung enthält keinen der " + treffer.length + " Werte");
+  ok(aufdecken(v.text, v.zuordnung) === inhalt, "hin und zurück ergibt Zeichen für Zeichen den Köder");
+  const betraege = treffer.filter((t) => t.sorte === "BETRAG");
+  const rest = betraege.filter((t) => {
+    const i = v.text.indexOf(t.platzhalter);
+    const vor = v.text[i - 1] || "", nach = v.text[i + t.platzhalter.length] || "";
+    return /[\d.,]/.test(vor) || /\d/.test(nach);
+  });
+  ok(betraege.length >= 3 && rest.length === 0, betraege.length + " Beträge ganz verdeckt, keine Ziffer und kein Punkt daneben stehen geblieben");
+  const doppelt = verdecke("a@b.de und a@b.de", []);
+  ok(doppelt.zuordnung.size === 1 && doppelt.text === "⟦MAIL-1⟧ und ⟦MAIL-1⟧", "derselbe Wert trägt überall denselben Platzhalter");
+  ok(finde("Frau Müller ruft an", []).length === 0, "ohne Namen-Liste wird kein Name gemeldet");
+  return erg;
+}
+function testZeigen(erg) {
+  const ul = $("test-ergebnis"); ul.textContent = "";
+  for (const e of erg) ul.append(el("li", { "data-ok": String(e.ok) }, (e.ok ? "✓ " : "✗ ") + e.satz));
+  const gut = erg.filter((e) => e.ok).length;
+  $("test-summe").className = "meldung " + (gut === erg.length ? "gut" : "warn");
+  $("test-summe").textContent = gut + " von " + erg.length + " bestanden · " + new Date().toISOString().slice(0, 16).replace("T", " ") + " UTC · " + navigator.userAgent;
+  window.__selbsttest = { gut, gesamt: erg.length, erg };
+}
+$("test-start").addEventListener("click", async () => {
+  try {
+    const r = await fetch("koeder.txt", { cache: "no-store" });
+    if (!r.ok) throw new Error("HTTP " + r.status);
+    testZeigen(selbsttest(await r.text()));
+  } catch (_e) {
+    $("test-summe").className = "meldung warn";
+    $("test-summe").textContent = "Der Köder ließ sich nicht laden (bei einer direkt geöffneten Datei sperrt der Browser das). Wählen Sie koeder.txt daneben aus.";
+  }
+});
+$("test-datei").addEventListener("change", async (e) => {
+  const f = e.target.files && e.target.files[0]; if (f) testZeigen(selbsttest(await f.text()));
+});
+
+/* ══ ABSCHIRMUNG + MEMBRAN (Klaus 2026-09-29)
+   Modul 17 (Widget mit der FREMD-Lampe) VOR Modul 15, so verlangt es Modul 17.
+   allowedOrigins leer: jede fremde Nachricht wird abgewiesen und gemeldet. */
+const AB = window.SendeAbschirmung;
+function abschirmZeichnen() {
+  if (!AB) return;
+  const f = AB.funde(), anJ = AB.an();
+  $("schild").dataset.an = anJ ? "1" : "0";
+  $("schild").setAttribute("aria-pressed", String(anJ));
+  $("schild-text").textContent = anJ ? " Abgeschirmt" : " Abschirmen";
+  $("schild-zahl").hidden = !f.length; $("schild-zahl").textContent = f.length;
+  $("fremd-banner").hidden = !f.length || anJ || AB.ausgeblendet();
+  $("fremd-banner-text").textContent = f.length ? "Etwas Fremdes liest in dieser Seite mit: " + f[f.length - 1].was : "";
+  $("abschirm-stand").textContent = (anJ ? "Abgeschirmt. " : "Nicht abgeschirmt. ") + (f.length ? f.length + " Fund(e) seit dem Öffnen:" : "Bisher nichts Fremdes gefunden.");
+  $("abschirm-funde").replaceChildren(...f.map((x) => el("li", {}, x.was)));
+}
+if (AB) {
+  AB.abo(abschirmZeichnen);
+  $("schild").addEventListener("click", () => AB.umschalten());
+  $("fremd-schirmen").addEventListener("click", () => AB.setze(true));
+  $("fremd-weg").addEventListener("click", AB.ausblenden);
+  $("fremd-mehr").addEventListener("click", () => { $("menue-dialog").showModal(); $("abschirm-kasten").scrollIntoView(); });
+}
+if (AB) { AB.start(); abschirmZeichnen(); }
+
+/* ══ START */
+window.SendePruefer = { finde, verdecke, aufdecken, istIban, selbsttest, ANBIETER, emlBauen, mailLesen, mails: () => MAILS, bereit: null };
+if (!P) $("modul-fehlt").hidden = false;
+(async () => {
+  DB = await dbAuf();
+  MAILS = (await dbTx("readonly", (s) => s.getAll())) || [];
+  if (!MAILS.length && !lies(SAAT_KEY)) {
+    MAILS = BEISPIELE.map(beispielMail);
+    for (const m of MAILS) await jetztSpeichern(m);
+    schreib(SAAT_KEY, "1");
+  }
+  $("speicher-stand").textContent = DB ? "" : "Speichern ist in diesem Fenster nicht möglich: die Mails gehen beim Schließen verloren.";
+  alles();
+  window.SendePruefer.bereit = true;
+})();
+if ("serviceWorker" in navigator && location.protocol.startsWith("http")) navigator.serviceWorker.register("sw.js").catch(() => {});
+</script>
+</body>
+</html>

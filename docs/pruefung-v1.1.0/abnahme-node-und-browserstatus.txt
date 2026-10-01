@@ -1,0 +1,265 @@
+MODUL 25 PSEUDONYM Generation 2 bereit, Sorten: SCHLUESSEL+MAIL+IBAN+BETRAG+RECHNUNG+TELEFON + NAME aus Liste
+✓ Gemeinsame Prüfung warnt: Englisch
+✓ Gemeinsame Prüfung warnt: Deutsch
+✓ Gemeinsame Prüfung warnt: Russisch
+✓ Gemeinsame Prüfung warnt: Zero Width
+✓ Gemeinsame Prüfung warnt: Vollbreite
+✓ Gemeinsame Prüfung warnt: Base64
+✓ Gemeinsame Prüfung warnt: Umformulierung
+✓ Unicode-Zeichen werden zusätzlich benannt
+✓ Normale Lieferanfrage bleibt ohne Injection-Hinweis
+✓ Zitat bleibt ein Hinweis, nicht ein Angriffsnachweis
+✓ Originaltext wird bei Normalisierung nicht ersetzt
+✓ Zu langer Text ist teilweise geprüft
+✓ Teilprüfung kann nicht freigegeben werden
+MODUL 25 PSEUDONYM Generation 2 bereit, Sorten: SCHLUESSEL+MAIL+IBAN+BETRAG+RECHNUNG+TELEFON + NAME aus Liste
+✓ Fehlender Inhaltskern ist ungeprüft
+✓ Fehlender Inhaltskern sperrt auch mit Bestätigung
+✓ Befund verlangt bewusste Freigabe
+✓ Geprüfter Befund kann nach bewusster Prüfung weitergegeben werden
+✓ Normaler Text benötigt keine Bestätigung
+✓ Echte Extraktion plus gemeinsame Inhaltsprüfung: test.txt
+✓ Dateibericht enthält den Hinweis: test.txt
+✓ Echte Extraktion plus gemeinsame Inhaltsprüfung: test.svg
+✓ Dateibericht enthält den Hinweis: test.svg
+✓ Echte Extraktion plus gemeinsame Inhaltsprüfung: test.html
+✓ Dateibericht enthält den Hinweis: test.html
+✓ Echte Extraktion plus gemeinsame Inhaltsprüfung: test.docx
+✓ Dateibericht enthält den Hinweis: test.docx
+✓ EML-Anhang wird vollständig dekodiert
+✓ Dekodierter EML-Anhang durchläuft dieselbe Prüfung
+Warning: Setting up fake worker.
+✓ PDF-Textebene enthält KI-Warnung
+✓ Fehlender visueller PDF-Abgleich ist keine grüne Vollprüfung
+MODUL 25 PSEUDONYM Generation 2 bereit, Sorten: SCHLUESSEL+MAIL+IBAN+BETRAG+RECHNUNG+TELEFON + NAME aus Liste
+✓ Eingesetzte OCR-Ausgabe: Sicherheit 95, Warnung true
+✓ OCR-Teilprüfung bleibt ausdrücklich teilweise
+MODUL 25 PSEUDONYM Generation 2 bereit, Sorten: SCHLUESSEL+MAIL+IBAN+BETRAG+RECHNUNG+TELEFON + NAME aus Liste
+✓ Eingesetzte OCR-Ausgabe: Sicherheit 59, Warnung false
+✓ OCR-Teilprüfung bleibt ausdrücklich teilweise
+MODUL 25 PSEUDONYM Generation 2 bereit, Sorten: SCHLUESSEL+MAIL+IBAN+BETRAG+RECHNUNG+TELEFON + NAME aus Liste
+✓ Eingesetzte OCR-Ausgabe: Sicherheit 95, Warnung true
+✓ OCR-Teilprüfung bleibt ausdrücklich teilweise
+MODUL 25 PSEUDONYM Generation 2 bereit, Sorten: SCHLUESSEL+MAIL+IBAN+BETRAG+RECHNUNG+TELEFON + NAME aus Liste
+✓ Eingesetzte OCR-Ausgabe: Sicherheit 95, Warnung true
+✓ OCR-Teilprüfung bleibt ausdrücklich teilweise
+✓ Unbekannter Dateityp bleibt ungeprüft
+✓ Gemischte OCR-Sicherheit bleibt teilweise geprüft
+✓ PDF-Bibliotheksausfall bleibt in Gesamtstatus und Bericht sichtbar
+✓ Personenangaben aus Anhängen stehen auch im gemeinsamen Bericht
+✓ Geänderte Namensliste entwertet alte Personenbefunde
+✓ Gleichnamige Dateien werden getrennt geprüft
+✓ Später LSB-Fund steht im zentralen Bericht
+✓ Wiederholte Zusatzprüfung verdoppelt Befunde nicht
+✓ Bericht nennt weiterhin ungeprüfte Stego-Verfahren
+✓ Fehlgeschlagene Zusatzprüfung erscheint im Gesamtbericht
+✓ Blobänderung entwertet vorheriges Prüfergebnis sofort
+✓ Geänderter Blob wird neu geprüft
+✓ Altes asynchrones Ergebnis überschreibt neuen Blobstand nicht
+✓ Datei über 25 MiB wird nicht geöffnet und bleibt ungeprüft
+✓ Eigener Arbeitsauftrag löst keine Fremdinhalt-Sperre aus
+✓ Mail und Arbeitsauftrag sind getrennte JSON-Felder
+✓ Maskierung verwendet in beiden Feldern dieselben Platzhalter
+✓ Freigabebindung unterscheidet Originale auch bei gleichem Maskentext
+✓ Echte Sendefreigabe sperrt auffälligen Mailtext
+✓ Echte Sendefreigabe sperrt bei fehlender UI-Auswertung
+✓ API messages/max_tokens: Schutzinstruktion getrennt
+✓ API messages/max_tokens: nur Text und passende Längengrenze
+✓ API openai/max_completion_tokens: Schutzinstruktion getrennt
+✓ API openai/max_completion_tokens: nur Text und passende Längengrenze
+✓ API openai/max_tokens: Schutzinstruktion getrennt
+✓ API openai/max_tokens: nur Text und passende Längengrenze
+
+64 bestanden · 0 Fehler · Browser/OCR-Erkennung nicht Gegenstand dieses Laufs
+✓ Alle Offline-Ressourcen existieren im Paket
+✓ Inhaltsprüfung und Freigabe stehen im Vorrat
+✓ PDF.js, OCR-WASM und drei Sprachen stehen im Vorrat
+✓ Vorrat enthält nur eigene relative Ressourcen
+✓ Ohne installierte Ressourcen kein Offline-bereit-Status
+✓ Erfolgreiche Installation speichert alle Ressourcen
+✓ skipWaiting erst nach erfolgreicher Installation
+✓ Vollständiger Vorrat meldet Offline bereit
+✓ Ein fehlendes Sprachmodell entwertet Offline bereit
+✓ Aktivierung löscht ausschließlich alte Caches dieses Scopes
+✓ Fremder Prüfercache und anderer Sendercache bleiben erhalten
+✓ Aktivierung übernimmt eigene Clients
+✓ Offline liefert eigene HTML-Ressource aus Cache
+✓ Fehlender OCR-Worker liefert 503 statt HTML als JavaScript
+✓ KI-POST wird nicht abgefangen oder gecacht
+✓ Auch POST an einen eigenen Ressourcenpfad wird nicht abgefangen
+✓ Fremde GET-Anfrage wird nicht abgefangen
+✓ Unbekannter lokaler Benutzerdatenpfad wird nicht gecacht
+✓ Fehlgeschlagener Download lässt Installation scheitern
+✓ Teilweise Installation meldet niemals Offline bereit
+
+20 bestanden · 0 Fehler · Service-Worker-Testmodell, keine Browser-Abnahme
+✓ Hinweis ist im echten UI-Baustein sichtbar
+✓ Befund beginnt ohne Freigabe
+✓ Bewusster Haken gilt für diesen konkreten Inhalt
+✓ Unveränderte Neuzeichnung erhält den Haken
+✓ Freigabe gilt nicht für eine andere Mail
+✓ Geänderter Text ist schon vor Neuzeichnung gesperrt
+✓ Inhaltsänderung setzt den sichtbaren Haken zurück
+✓ Geänderter Arbeitsauftrag entwertet die Freigabe
+✓ Gleicher Maskentext erlaubt keine geänderten Originaldaten
+✓ Entfernter Haken nimmt die Freigabe zurück
+✓ Unauffälliger Mailtext benötigt keinen Haken
+✓ Eigener Auftrag wird nicht als fremder Inhalt markiert
+✓ Fehlender Prüfkern bleibt sichtbar ungeprüft und gesperrt
+✓ Fehlende Auswertung ist keine Freigabe
+✓ Verzögerte Antwort überschreibt geänderte Originaldaten nicht
+✓ Verzögerte Antwort überschreibt keine andere ausgewählte Mail
+
+16 bestanden · 0 Fehler · DOM-/Fetch-Adapter, kein Browser-Layouttest
+✓ die vier Dateien zusammen unter 96 KB (98222 Bytes)
+✓ keine fremde Quelle im Markup (src/href nach draußen außer Links zum Anklicken)
+✓ kein Eingabefeld für eine Adresse (keine type=url, kein Feld namens adresse/url/endpoint)
+✓ die Anbieter stehen als benannte, eingefrorene Liste in assets/anbieter.js
+✓ Claude steht oben, Mistral ganz unten (Klaus 2026-09-29)
+✓ ChatGPT, Gemini und OpenRouter sind wählbar
+✓ je Anbieter genau eine Adresse, ein Modell und eine Schlüssel-Seite
+✓ die Seite selbst trägt keine KI-Adresse — sie stehen nur in der Liste
+✓ die Seite lädt die Liste vor dem eigenen Skript
+✓ die neueren OpenAI-Modelle bekommen max_completion_tokens statt max_tokens
+✓ LIESMICH nennt mindestens fünf Grenzen (12)
+✓ LIESMICH nennt vor der Bedienung zwei Fälle, in denen man zur Seite greift
+✓ Modul 25 liegt bei (modules/25_pseudonym.js)
+✓ Modul 25 ist unverändert (SHA-256 gepinnt)
+⊘ Sage-Protokol liegt nicht daneben — der Vergleich mit Sage ist hier nicht messbar
+✓ die Seite lädt Modul 25 vor ihrem eigenen Skript
+✓ die Seite trägt keine eigenen Erkennungs-Muster mehr (keine zweite Fassung)
+✓ modules/01_storage.js ist unverändert (SHA-256 gepinnt)
+✓ modules/02_spore.js ist unverändert (SHA-256 gepinnt)
+✓ modules/03_embedding.js ist unverändert (SHA-256 gepinnt)
+✓ modules/04_match.js ist unverändert (SHA-256 gepinnt)
+✓ modules/05_anastomose.js ist unverändert (SHA-256 gepinnt)
+✓ modules/05b_nostr_relay.js ist unverändert (SHA-256 gepinnt)
+✓ modules/07_apoptose.js ist unverändert (SHA-256 gepinnt)
+✓ modules/15_membran.js ist unverändert (SHA-256 gepinnt)
+✓ modules/16_siegel.js ist unverändert (SHA-256 gepinnt)
+✓ modules/16b_andock_wizard.js ist unverändert (SHA-256 gepinnt)
+✓ modules/23_rendezvous.js ist unverändert (SHA-256 gepinnt)
+✓ modules/23_rendezvous_ui.js ist unverändert (SHA-256 gepinnt)
+✓ modules/noble-secp256k1.js ist unverändert (SHA-256 gepinnt)
+✓ assets/schluesseltresor.js ist unverändert (SHA-256 gepinnt)
+✓ Schloss und Tresor stehen im Offline-Vorrat
+✓ die Seite schreibt den Schlüssel nirgends offen in den Speicher
+✓ Modul 17 (das fliegende Widget) liegt NICHT mehr bei — die Leiste steht fest im Kopf
+✓ die Kette nennt alle 13 Pflicht-Module und den Wizard, in kanonischer Reihenfolge
+✓ 05b läuft als ES-Modul (sonst leuchtet das Siegel, während der Raum tot ist)
+✓ zwischen den Gliedern der Kette steht jedes Komma (sonst ist [..] [..] ein Index-Zugriff)
+✓ die eigene Schublade sendepruefer steht im <head> (Modul 01 liest sie beim Laden)
+✓ die Membran erlaubt keine fremde Herkunft (allowedOrigins leer)
+✓ das Siegel hängt am festen Platz in der Kopfleiste und trägt ein Band
+✓ die Bedeutungs-Beschreibung beginnt mit dem eigenen Namen
+✓ … nennt Zweck, SBKIM-Protokoll, Sage-Protokol und dass er ein Knoten ist
+✓ … und sagt, was er NICHT ist (kein Virenscanner)
+✓ installiert öffnet es als eigenes Fenster mit Minimieren · Verkleinern · Schließen (display: standalone)
+✓ die Erklärseite des Siegels (sicherheit.html) liegt da und steht im Offline-Vorrat
+✓ die Anbieter-Liste steht im Offline-Vorrat
+✓ Modul 25 steht im Offline-Vorrat
+✓ oben in der Kopfleiste steht ? und führt zum Handbuch
+✓ das Handbuch ist gebaut und trägt jede Szene der Liste (sonst ist es veraltet: node tools/handbuch-bauen.mjs)
+✓ … jedes Bild liegt da, und jede Szene hat einen Sprechtext fürs Video
+✓ … jeder Leuchtring liegt im Bild
+✓ … holt nichts aus dem Netz (keine fremde Adresse in src oder href)
+✓ … und liest nur mit einer Stimme auf dem Gerät vor (localService)
+✓ anleitung.html ist genau das, was aus LIESMICH.md gebaut wird (sonst: node tools/anleitung-bauen.mjs)
+✓ … trägt jede Grenze aus LIESMICH.md (12 von 12)
+✓ … jede Sorte der Tabelle steht als Zeile da
+✓ … Text wird maskiert, nicht als HTML gelesen
+✓ … holt nichts aus dem Netz
+✓ die Seite verlinkt „Anleitung und Grenzen“ auf die gestaltete Seite, nicht auf die Rohdatei
+✓ … das Handbuch ebenso
+✓ die Anleitung steht im Offline-Vorrat
+✓ das Manifest nennt 192, 512 und ein maskierbares Icon, und alle Dateien liegen da
+✓ Favicon und Apple-Icon stehen im Kopf der Seite und liegen da
+✓ der Lichtweg in Seite und Handbuch ist genau der gebaute (node tools/lichtweg.mjs)
+✓ … folgt Klaus' Weg: Start unten links, durch die Mitte, Ende oben rechts
+✓ … läuft ohne Halt: gleicher Abstand je Schritt, linear abgespielt
+✓ … blitzt am Start und am Ende mindestens vierfach auf
+✓ … nimmt in der Mitte die ganze Höhe des Icons ein
+✓ … und wird dazwischen wieder klein
+✓ … läuft doppelt so schnell wie zuerst (3,5 statt 7 Sekunden)
+✓ … und in der Mitte strahlt der Boden kurz zurück, in Schild-Breite: die hellen Streifen des Bildes leuchten heller
+✓ das Icon wackelt genau an der Stelle, auf die der Schein fällt (sie gibt nach hinten nach)
+✓ … sichtbar weit, in der Mitte kaum, und am Anfang und Ende wieder gerade
+✓ … und das Schweben stört das Wackeln nicht (Schweben über translate, beides zugleich)
+✓ … auch im Handbuch steht das Icon bei „weniger Bewegung“ still
+✓ … und steht bei „weniger Bewegung“ still
+✓ das Handbuch steht im Offline-Vorrat
+✓ assets/pruefer-formate.js ist unverändert (SHA-256 gepinnt, aus dem Auslieferungsprüfer)
+✓ assets/pruefer-anhang.js ist unverändert (SHA-256 gepinnt, aus dem Auslieferungsprüfer)
+✓ assets/pruefer.js ist unverändert (SHA-256 gepinnt, der HTML-Prüfer aus dem Auslieferungsprüfer)
+✓ assets/pruefer-mail.js ist unverändert (SHA-256 gepinnt, aus dem Auslieferungsprüfer)
+✓ die Anhang-Prüfung, ihr Prüfteil, der PDF-Prüfer und die KI-Liste stehen im Offline-Vorrat
+✓ die Seite lädt die Anhang-Prüfung vor ihrem eigenen Skript
+✓ eigenständig: vendor/pdfjs/pdf.min.js liegt im Depot, byte-gleich mit dem Auslieferungsprüfer (SHA gepinnt)
+✓ eigenständig: vendor/pdfjs/pdf.worker.min.js liegt im Depot, byte-gleich mit dem Auslieferungsprüfer (SHA gepinnt)
+✓ eigenständig: vendor/tesseract/LICENSE-Apache-2.0.txt liegt im Depot, byte-gleich (Tesseract.js 7.0.0, SHA gepinnt)
+✓ eigenständig: vendor/tesseract/lang/deu.traineddata liegt im Depot, byte-gleich (Tesseract.js 7.0.0, SHA gepinnt)
+✓ eigenständig: vendor/tesseract/lang/eng.traineddata liegt im Depot, byte-gleich (Tesseract.js 7.0.0, SHA gepinnt)
+✓ eigenständig: vendor/tesseract/lang/rus.traineddata liegt im Depot, byte-gleich (Tesseract.js 7.0.0, SHA gepinnt)
+✓ eigenständig: vendor/tesseract/tesseract-core-lstm.wasm.js liegt im Depot, byte-gleich (Tesseract.js 7.0.0, SHA gepinnt)
+✓ eigenständig: vendor/tesseract/tesseract-core-relaxedsimd-lstm.wasm.js liegt im Depot, byte-gleich (Tesseract.js 7.0.0, SHA gepinnt)
+✓ eigenständig: vendor/tesseract/tesseract-core-simd-lstm.wasm.js liegt im Depot, byte-gleich (Tesseract.js 7.0.0, SHA gepinnt)
+✓ eigenständig: vendor/tesseract/tesseract.min.js liegt im Depot, byte-gleich (Tesseract.js 7.0.0, SHA gepinnt)
+✓ eigenständig: vendor/tesseract/tesseract.min.js.LICENSE.txt liegt im Depot, byte-gleich (Tesseract.js 7.0.0, SHA gepinnt)
+✓ eigenständig: vendor/tesseract/worker.min.js liegt im Depot, byte-gleich (Tesseract.js 7.0.0, SHA gepinnt)
+✓ eigenständig: vendor/tesseract/worker.min.js.LICENSE.txt liegt im Depot, byte-gleich (Tesseract.js 7.0.0, SHA gepinnt)
+✓ eigenständig: keine ausgelieferte Datei holt etwas aus Workflow-PDF (Kommentare zählen nicht)
+✓ eigenständig: pdf-lib liegt NUR bei den Proben, nicht in vendor/
+✓ eigenständig: THIRD_PARTY.md nennt pdf.js 3.11.174 und seine Lizenz (Apache 2.0)
+✓ der Prüfteil lädt auch ohne Browser (PrueferAnhang.pruefe) — genau die Kopie, die der Browser nachlädt
+✓ assets/anhaenge.js trägt keine eigene Prüfung mehr, sondern lädt pruefer-anhang.js nach
+✓ die gemeinsame Abdeckung steht zusätzlich zu Befunden in der Anhang-Anzeige
+✓ … in der Reihenfolge PDF-Prüfer → KI-Liste → HTML-Prüfer → Anhang-Prüfer (die KI-Liste muss da sein, bevor ein PDF geprüft wird)
+✓ … und der Weg zu pdf.js zeigt auf den EIGENEN Ordner vendor/pdfjs/ (im Offline-Vorrat)
+✓ … und der Weg zur Texterkennung zeigt auf den EIGENEN Ordner vendor/tesseract/ (im Offline-Vorrat)
+✓ THIRD_PARTY.md nennt Tesseract.js 7.0.0 und die Sprachdaten
+✓ PNG: Daten hinter dem Bildende werden gemeldet (BILD-ANHAENGSEL)
+✓ PNG: ein Text-Feld in den Metadaten wird gemeldet (BILD-METADATEN)
+✓ PNG ohne Zusätze: kein Befund (Gegenrichtung)
+✓ … und ein paar Füllbytes hinten sind kein Anhängsel
+✓ JPEG: EXIF mit Ortsangabe wird als GPS gemeldet
+✓ JPEG: ein angehängtes Video (Bewegungsfoto) wird benannt
+✓ JPEG ohne GPS-Verweis: keine erfundene Ortsangabe
+✓ SVG: Skript und Ereignis-Auslöser werden gemeldet (SVG-SKRIPT)
+✓ SVG: ein Abruf von einem fremden Rechner wird gemeldet (SVG-VERWEIS)
+✓ SVG: der sichtbare Text geht an Modul 25, das Skript nicht
+✓ SVG ohne Skript: kein Befund
+✓ Word (gepackt): als Word-Dokument erkannt
+✓ Word (gepackt): Makros werden gemeldet (OFFICE-MAKRO)
+✓ Word (gepackt): eine Vorlage von außen wird gemeldet (OFFICE-VERWEIS)
+✓ Word (gepackt): der Text samt Verfasser geht an Modul 25
+✓ Word (gespeichert): als Word-Dokument erkannt
+✓ Word (gespeichert): Makros werden gemeldet (OFFICE-MAKRO)
+✓ Word (gespeichert): eine Vorlage von außen wird gemeldet (OFFICE-VERWEIS)
+✓ Word (gespeichert): der Text samt Verfasser geht an Modul 25
+✓ Word ohne Makro und Verweis: kein Befund
+✓ HTML-Anhang: erkannt als HTML-Seite und fremde Abrufe gemeldet (Skript, Zählpixel)
+✓ … und der Text, der weitergeht, ist der sichtbare, nicht der Quelltext
+✓ … eine harmlose HTML-Seite meldet nichts Falsches
+✓ … eine Textdatei, die <html> nur erwähnt, bleibt Text
+✓ PDF: JavaScript und Aktion beim Öffnen werden gemeldet (über pruefer-formate.js)
+✓ PDF ohne pdf.js: der Seitentext heißt „NICHT gelesen … ungeprüft“, nie sauber
+✓ ein Programm wird gemeldet, auch mit doppelter Endung (ANHANG-PROGRAMM, ANHANG-TARNUNG)
+✓ ein Programm, das sich als .pdf ausgibt, wird am Dateikopf erkannt
+✓ eine Endung, die nicht zum Dateikopf passt, wird gemeldet
+✓ … und .jpeg zu einem JPEG ist keine Tarnung
+✓ Selbst-Riegel: der Anhang-Prüfer ist geladen (sonst misst der Teil darunter nichts)
+Warning: Cannot polyfill `DOMMatrix`, rendering may be broken: "ReferenceError: require is not defined".
+Warning: Cannot polyfill `Path2D`, rendering may be broken: "ReferenceError: require is not defined".
+✓ Selbst-Riegel: pdf.js ist geladen
+✓ Selbst-Riegel: die KI-Liste (pruefer-mail.js) ist geladen
+Warning: Setting up fake worker.
+Warning: fetchStandardFontData: failed to fetch file "LiberationSans-Regular.ttf" with "UnknownErrorException: The standard font "baseUrl" parameter must be specified, ensure that the "standardFontDataUrl" API parameter is provided.".
+✓ PDF-Seitentext: eine Anweisung an eine KI (weiß, 1 pt) wird gemeldet, mit Seite 2
+✓ … der Seitentext geht weiter an Modul 25 (Mailadresse von Seite 1 darin)
+✓ … und gesagt, wie viele Seiten gelesen wurden (2 von 2)
+
+141 grün · 0 ROT
+⊘ UNGEPRÜFT: Browser-Proben nicht ausgeführt (Chromium oder playwright-core fehlt).
+⊘ UNGEPRÜFT: Neue Browser-Abnahme nicht ausführbar (Chromium/Playwright fehlt).
+
+Gesamtumfang: 0 fehlerhafte Prüfläufe · 2 nicht vollständig ausführbare Prüfläufe.
