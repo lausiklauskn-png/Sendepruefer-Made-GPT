@@ -1,0 +1,334 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Sende-Prüfer · Handbuch</title>
+<meta name="description" content="Handbuch zum Sende-Prüfer: in 12 Szenen mit echten Bildern der App — wie eine Mail geprüft wird, bevor sie an eine KI geht.">
+<meta name="theme-color" content="#0b1418">
+<link rel="icon" href="icons/favicon-32.png" sizes="32x32" type="image/png">
+<!-- GEBAUT von tools/handbuch-bauen.mjs aus tools/handbuch-vorlage.html und tools/handbuch-szenen.mjs.
+     Nicht von Hand ändern: beim nächsten Bau wäre es weg. -->
+<style>
+:root{--bg:#0b1418;--fl:#122128;--fl2:#17303a;--linie:#24414b;--schrift:#e8f0f3;--leise:#9db3bb;--petrol:#5cc2c9;--glanz:#8fe4ea;--gold:#f3b54a;--gold2:#ffd98a;color-scheme:dark}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-padding-top:16px}
+body{margin:0;background:var(--bg);color:var(--schrift);font:16px/1.6 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+body::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;
+ background:radial-gradient(60vw 40vw at 85% -10%,rgb(92 194 201/.18),transparent 70%),radial-gradient(50vw 40vw at -10% 110%,rgb(243 181 74/.12),transparent 70%)}
+a{color:var(--glanz)}
+code{font:600 .92em ui-monospace,SFMono-Regular,Menlo,monospace;color:var(--gold2);background:rgb(243 181 74/.12);padding:1px 5px;border-radius:6px}
+.held{padding:48px 20px 28px;text-align:center;max-width:980px;margin:0 auto}
+.bild-held{display:block;height:auto}
+.bild-buehne{position:relative;display:block;width:min(640px,90vw);margin:0 auto 10px;filter:drop-shadow(0 30px 60px rgb(0 0 0/.55));border-radius:17%;overflow:hidden;isolation:isolate}
+.bild-buehne .leer-bild,.bild-buehne .bild-held{width:100%;margin:0}
+/* LICHTWEG-ANFANG — gebaut von tools/lichtweg.mjs, nicht von Hand ändern.
+   Klaus' Weg (2026-09-29): unten links hinein, im Bogen zur Mitte, im Bogen oben rechts hinaus.
+   Gleicher Abstand je Schritt, linear: kein Halt. Groß an Start, Mitte, Ende; in der Mitte die ganze Höhe. */
+.bild-buehne::after{content:"";position:absolute;left:4.4%;top:58.6%;width:14%;height:14%;border-radius:50%;translate:-50% -50%;pointer-events:none;mix-blend-mode:screen;opacity:0;background:radial-gradient(closest-side,rgb(255 255 255/.75),rgb(255 255 255/.28) 45%,rgb(143 228 234/.14) 70%,transparent);animation:licht-weg 3.5s linear infinite,kegel 3.5s ease-in-out infinite}
+/* … das Schild leuchtet auf, wenn der Schein die Mitte erreicht, und die Streifen am Boden strahlen heller zurück */
+.bild-buehne::before{content:"";position:absolute;inset:0;z-index:1;pointer-events:none;opacity:0;background:radial-gradient(16% 30% at 50% 48%,rgb(255 255 255/.7),transparent),url(icons/sende-pruefer-bild.webp) 0 0/100% 100%;mix-blend-mode:plus-lighter;filter:saturate(1.3);-webkit-mask:radial-gradient(18% 32% at 50% 48%,#000 60%,transparent),radial-gradient(22% 7% at 50% 87%,#000 55%,transparent);mask:radial-gradient(18% 32% at 50% 48%,#000 60%,transparent),radial-gradient(22% 7% at 50% 87%,#000 55%,transparent);animation:aufleuchten 3.5s ease-in-out infinite}
+/* … und das Icon gibt unter dem Schein nach wie ein lose aufgehängter Knopf */
+.bild-buehne{--wackeln:wackeln 3.5s linear infinite;animation:var(--wackeln)}
+@keyframes wackeln{0%{transform:perspective(900px) rotateX(0deg) rotateY(0deg)}2.08%{transform:perspective(900px) rotateX(-0.21deg) rotateY(-1.17deg)}4.17%{transform:perspective(900px) rotateX(-0.61deg) rotateY(-3.76deg)}6.25%{transform:perspective(900px) rotateX(-0.95deg) rotateY(-6.5deg)}8.33%{transform:perspective(900px) rotateX(-1.1deg) rotateY(-8.36deg)}10.42%{transform:perspective(900px) rotateX(-0.98deg) rotateY(-8.54deg)}12.5%{transform:perspective(900px) rotateX(-0.78deg) rotateY(-8.05deg)}14.58%{transform:perspective(900px) rotateX(-0.58deg) rotateY(-7.56deg)}16.67%{transform:perspective(900px) rotateX(-0.39deg) rotateY(-7.07deg)}18.75%{transform:perspective(900px) rotateX(-0.21deg) rotateY(-6.57deg)}20.83%{transform:perspective(900px) rotateX(-0.04deg) rotateY(-6.07deg)}22.92%{transform:perspective(900px) rotateX(0.12deg) rotateY(-5.57deg)}25%{transform:perspective(900px) rotateX(0.28deg) rotateY(-5.07deg)}27.08%{transform:perspective(900px) rotateX(0.42deg) rotateY(-4.56deg)}29.17%{transform:perspective(900px) rotateX(0.56deg) rotateY(-4.05deg)}31.25%{transform:perspective(900px) rotateX(0.68deg) rotateY(-3.54deg)}33.33%{transform:perspective(900px) rotateX(0.79deg) rotateY(-3.02deg)}35.42%{transform:perspective(900px) rotateX(0.88deg) rotateY(-2.5deg)}37.5%{transform:perspective(900px) rotateX(0.96deg) rotateY(-1.98deg)}39.58%{transform:perspective(900px) rotateX(1.02deg) rotateY(-1.45deg)}41.67%{transform:perspective(900px) rotateX(1.06deg) rotateY(-0.93deg)}43.75%{transform:perspective(900px) rotateX(1.07deg) rotateY(-0.4deg)}45.83%{transform:perspective(900px) rotateX(1.06deg) rotateY(0.13deg)}47.92%{transform:perspective(900px) rotateX(1.01deg) rotateY(0.65deg)}50%{transform:perspective(900px) rotateX(0.83deg) rotateY(1.15deg)}52.08%{transform:perspective(900px) rotateX(0.65deg) rotateY(1.64deg)}54.17%{transform:perspective(900px) rotateX(0.48deg) rotateY(2.14deg)}56.25%{transform:perspective(900px) rotateX(0.31deg) rotateY(2.64deg)}58.33%{transform:perspective(900px) rotateX(0.15deg) rotateY(3.14deg)}60.42%{transform:perspective(900px) rotateX(-0.01deg) rotateY(3.65deg)}62.5%{transform:perspective(900px) rotateX(-0.15deg) rotateY(4.16deg)}64.58%{transform:perspective(900px) rotateX(-0.29deg) rotateY(4.67deg)}66.67%{transform:perspective(900px) rotateX(-0.41deg) rotateY(5.18deg)}68.75%{transform:perspective(900px) rotateX(-0.52deg) rotateY(5.7deg)}70.83%{transform:perspective(900px) rotateX(-0.62deg) rotateY(6.22deg)}72.92%{transform:perspective(900px) rotateX(-0.69deg) rotateY(6.74deg)}75%{transform:perspective(900px) rotateX(-0.74deg) rotateY(7.26deg)}77.08%{transform:perspective(900px) rotateX(-0.75deg) rotateY(7.79deg)}79.17%{transform:perspective(900px) rotateX(-0.72deg) rotateY(8.32deg)}81.25%{transform:perspective(900px) rotateX(-0.61deg) rotateY(8.83deg)}83.33%{transform:perspective(900px) rotateX(-0.4deg) rotateY(9.32deg)}85.42%{transform:perspective(900px) rotateX(-0.05deg) rotateY(9.71deg)}87.5%{transform:perspective(900px) rotateX(0.42deg) rotateY(9.95deg)}89.58%{transform:perspective(900px) rotateX(0.94deg) rotateY(10.02deg)}91.67%{transform:perspective(900px) rotateX(1.35deg) rotateY(9.25deg)}93.75%{transform:perspective(900px) rotateX(1.35deg) rotateY(6.75deg)}95.83%{transform:perspective(900px) rotateX(0.93deg) rotateY(3.66deg)}97.92%{transform:perspective(900px) rotateX(0.33deg) rotateY(1.07deg)}100%{transform:perspective(900px) rotateX(0deg) rotateY(0deg)}}
+@keyframes licht-weg{0%{left:4.4%;top:58.6%}2.08%{left:6.4%;top:57.7%}4.17%{left:8.4%;top:56.7%}6.25%{left:10.4%;top:55.8%}8.33%{left:12.4%;top:54.9%}10.42%{left:14.4%;top:54.1%}12.5%{left:16.5%;top:53.2%}14.58%{left:18.5%;top:52.4%}16.67%{left:20.6%;top:51.6%}18.75%{left:22.6%;top:50.9%}20.83%{left:24.7%;top:50.2%}22.92%{left:26.8%;top:49.5%}25%{left:28.9%;top:48.8%}27.08%{left:31%;top:48.2%}29.17%{left:33.1%;top:47.7%}31.25%{left:35.3%;top:47.2%}33.33%{left:37.4%;top:46.7%}35.42%{left:39.6%;top:46.3%}37.5%{left:41.8%;top:46%}39.58%{left:43.9%;top:45.8%}41.67%{left:46.1%;top:45.6%}43.75%{left:48.3%;top:45.5%}45.83%{left:50.5%;top:45.6%}47.92%{left:52.7%;top:45.8%}50%{left:54.8%;top:46.5%}52.08%{left:56.8%;top:47.3%}54.17%{left:58.9%;top:48%}56.25%{left:61%;top:48.7%}58.33%{left:63.1%;top:49.4%}60.42%{left:65.2%;top:50%}62.5%{left:67.3%;top:50.6%}64.58%{left:69.4%;top:51.2%}66.67%{left:71.6%;top:51.7%}68.75%{left:73.7%;top:52.2%}70.83%{left:75.9%;top:52.6%}72.92%{left:78.1%;top:52.9%}75%{left:80.3%;top:53.1%}77.08%{left:82.5%;top:53.1%}79.17%{left:84.7%;top:53%}81.25%{left:86.8%;top:52.5%}83.33%{left:88.8%;top:51.7%}85.42%{left:90.5%;top:50.2%}87.5%{left:91.4%;top:48.3%}89.58%{left:91.8%;top:46.1%}91.67%{left:91.6%;top:43.9%}93.75%{left:91.2%;top:41.8%}95.83%{left:90.5%;top:39.7%}97.92%{left:89.7%;top:37.6%}100%{left:88.8%;top:35.6%}}
+@keyframes kegel{0%{scale:4;opacity:0}3%{opacity:1}23.8%{scale:1}47.7%{scale:4 7.14}73.8%{scale:1}97%{opacity:1}100%{scale:4;opacity:0}}
+@keyframes aufleuchten{0%,35.7%{opacity:0}47.7%{opacity:.85}61.7%,100%{opacity:0}}
+/* LICHTWEG-ENDE */
+@media (prefers-reduced-motion:reduce){.bild-buehne::after,.bild-buehne::before{animation:none;opacity:0}}
+@media (prefers-reduced-motion:reduce){.bild-buehne{animation:none}}
+
+.held .zurueck{position:absolute;left:16px;top:14px;font-size:.92rem;text-decoration:none;color:var(--leise)}
+.held h1{margin:10px 0 6px;font-size:clamp(1.9rem,5vw,3.2rem);line-height:1.1;letter-spacing:-.02em;
+ background:linear-gradient(100deg,var(--glanz),#fff 45%,var(--gold2));-webkit-background-clip:text;background-clip:text;color:transparent}
+.held .unter{color:var(--leise);margin:0 auto 22px;max-width:620px}
+/* Die Verwandlung: ein Name wird zum Platzhalter — genau das tut die App. */
+.wandel{display:inline-flex;gap:10px;align-items:center;flex-wrap:wrap;justify-content:center;margin:4px 0 26px;font:600 1rem ui-monospace,Menlo,monospace}
+.wandel .ding{position:relative;display:inline-grid;min-width:12ch;height:2.1em;place-items:center;border-radius:10px;border:1px solid var(--linie);background:var(--fl)}
+.wandel .ding>*{grid-area:1/1}
+.wandel .echt{color:var(--schrift)}
+.wandel .platz{color:var(--gold2);opacity:0}
+.wandel .pfeil{color:var(--petrol)}
+html.bewegt .wandel .echt{animation:weg 6s infinite}
+html.bewegt .wandel .platz{animation:her 6s infinite}
+html.bewegt .wandel .ding:nth-child(3) span{animation-delay:.4s}
+html.bewegt .wandel .ding:nth-child(5) span{animation-delay:.8s}
+@keyframes weg{0%,35%{opacity:1;filter:none}45%,90%{opacity:0;filter:blur(6px)}100%{opacity:1}}
+@keyframes her{0%,40%{opacity:0;transform:scale(.8)}50%,88%{opacity:1;transform:none}100%{opacity:0}}
+.knoepfe{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+.knopf{display:inline-flex;align-items:center;gap:8px;min-height:44px;padding:0 18px;border-radius:999px;border:1px solid var(--linie);
+ background:linear-gradient(180deg,var(--fl2),var(--fl));color:var(--schrift);font:600 .98rem system-ui,sans-serif;cursor:pointer;text-decoration:none;
+ box-shadow:inset 0 1px 0 rgb(255 255 255/.12),0 6px 18px rgb(0 0 0/.3)}
+.knopf.haupt{border-color:var(--gold);background:linear-gradient(180deg,#3a2c12,#231a0b);color:var(--gold2);box-shadow:inset 0 1px 0 rgb(255 255 255/.18),0 0 24px rgb(243 181 74/.25)}
+.knopf:hover{border-color:var(--petrol)}
+.rahmen{display:grid;grid-template-columns:240px minmax(0,1fr);gap:28px;max-width:1240px;margin:0 auto;padding:0 20px 60px}
+.film{position:sticky;top:16px;align-self:start;display:flex;flex-direction:column;gap:4px;padding:12px;border:1px solid var(--linie);border-radius:18px;background:rgb(18 33 40/.8)}
+.film::before{content:"Szenen";font:700 .72rem system-ui;letter-spacing:.14em;text-transform:uppercase;color:var(--leise);padding:2px 8px 6px}
+.film a{display:flex;gap:10px;align-items:center;padding:7px 10px;border-radius:10px;color:var(--leise);text-decoration:none;font-size:.9rem;line-height:1.25}
+.film a span{font:700 .78rem ui-monospace,Menlo,monospace;color:var(--petrol);min-width:2ch}
+.film a:hover,.film a[aria-current="true"]{background:var(--fl2);color:var(--schrift)}
+.film a[aria-current="true"] span{color:var(--gold)}
+.szenen{display:flex;flex-direction:column;gap:56px;min-width:0}
+.szene{scroll-margin-top:16px}
+.kopfzeile{display:flex;align-items:baseline;gap:14px;margin-bottom:12px}
+.kopfzeile .nr{font:800 2.6rem/1 ui-monospace,Menlo,monospace;color:transparent;-webkit-text-stroke:1.5px var(--gold);opacity:.9}
+.kopfzeile h2{margin:0;font-size:clamp(1.25rem,3vw,1.7rem)}
+.bild{position:relative;margin:0;border-radius:16px;overflow:hidden;border:1px solid var(--linie);background:#000;
+ box-shadow:0 30px 60px rgb(0 0 0/.45),0 0 0 6px rgb(92 194 201/.06)}
+.bild img{display:block;width:100%;height:auto}
+.szene.hoch .bild{max-width:360px;margin-inline:auto;border-radius:28px;border-width:6px;border-color:#1d2c33}
+.ring{position:absolute;border:3px solid var(--gold);border-radius:12px;box-shadow:0 0 0 4px rgb(243 181 74/.25),0 0 30px rgb(243 181 74/.55);pointer-events:none}
+html.bewegt .szene.da .ring{animation:puls 2.2s ease-in-out infinite}
+@keyframes puls{0%,100%{box-shadow:0 0 0 4px rgb(243 181 74/.25),0 0 30px rgb(243 181 74/.55)}50%{box-shadow:0 0 0 10px rgb(243 181 74/.05),0 0 50px rgb(243 181 74/.8)}}
+.text{margin:16px 0 8px;font-size:1.02rem}
+.sprech{margin:0;padding:10px 14px;border-left:3px solid var(--petrol);border-radius:0 12px 12px 0;background:rgb(92 194 201/.08);color:var(--glanz);font-style:italic}
+.mikro{font-style:normal;margin-right:4px}
+/* Ohne Skript steht alles da; erst mit Skript blenden die Szenen beim Rollen ein. */
+html.bewegt .szene{opacity:.25;transform:translateY(24px);transition:opacity .7s,transform .7s}
+html.bewegt .szene.da{opacity:1;transform:none}
+.grenzen{max-width:1240px;margin:0 auto 40px;padding:22px 20px;border-top:1px solid var(--linie);color:var(--leise)}
+/* Vorführen: eine Leiste unten wie Untertitel. */
+.buehne{position:fixed;left:50%;bottom:18px;transform:translateX(-50%);z-index:20;width:min(760px,calc(100vw - 24px));padding:12px 16px 14px;
+ border:1px solid var(--gold);border-radius:18px;background:rgb(11 20 24/.94);box-shadow:0 20px 50px rgb(0 0 0/.6);backdrop-filter:blur(6px)}
+.buehne[hidden]{display:none}
+.buehne .zeile{display:flex;gap:12px;align-items:center}
+.buehne .ut{flex:1;font-size:1.02rem;color:var(--schrift)}
+.buehne .balken{height:3px;border-radius:3px;background:var(--linie);margin-top:10px;overflow:hidden}
+.buehne .balken i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--petrol),var(--gold))}
+.buehne .stimme{font-size:.8rem;color:var(--leise);margin-top:6px}
+.szene.aktiv .bild{border-color:var(--gold);box-shadow:0 30px 60px rgb(0 0 0/.45),0 0 40px rgb(243 181 74/.35)}
+@media (max-width:900px){
+ .rahmen{grid-template-columns:1fr}
+ .film{flex-direction:row;overflow-x:auto;top:0;z-index:10;border-radius:0 0 14px 14px;margin:0 -20px;padding:8px 12px;scrollbar-width:none}
+ .film::before{display:none}
+ .film a{flex:none;white-space:nowrap}
+ .kopfzeile .nr{font-size:2rem}
+}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}html.bewegt .szene{opacity:1;transform:none;transition:none}html.bewegt .wandel .echt,html.bewegt .wandel .platz,html.bewegt .szene.da .ring{animation:none}html.bewegt .wandel .platz{opacity:0}}
+</style>
+</head>
+<body>
+<header class="held">
+ <a class="zurueck" href="sende-pruefer.html">← Zur App</a>
+ <span class="bild-buehne" data-licht><img class="bild-held" src="icons/sende-pruefer-bild-gross.webp" width="1254" height="1254" alt="Ein Brief geht durch ein Schutzschild; aus persönlichen Angaben werden Platzhalter"></span>
+ <h1>Sende-Prüfer · Handbuch</h1>
+ <p class="unter">In 12 Szenen durch den ganzen Weg: eine Mail kommt herein, die KI sieht nur Platzhalter, und die Antwort kommt mit den echten Angaben zurück. Alle Bilder sind echte Aufnahmen der App mit einer erfundenen Mail.</p>
+ <div class="wandel" aria-label="Aus einem Namen wird ein Platzhalter">
+  <span class="ding"><span class="echt">Petra Beispiel</span><span class="platz">⟦NAME-1⟧</span></span>
+  <span class="pfeil" aria-hidden="true">·</span>
+  <span class="ding"><span class="echt">1.248,50 EUR</span><span class="platz">⟦BETRAG-1⟧</span></span>
+  <span class="pfeil" aria-hidden="true">·</span>
+  <span class="ding"><span class="echt">DE89 3704 0044</span><span class="platz">⟦IBAN-1⟧</span></span>
+ </div>
+ <div class="knoepfe">
+  <button class="knopf haupt" id="vorfuehren" type="button">▶ Vorführen</button>
+  <a class="knopf" href="sende-pruefer.html">Zur App</a>
+  <a class="knopf" href="anleitung.html">Anleitung und Grenzen</a>
+  <a class="knopf" href="inhaltspruefung.html">Neue Inhaltsprüfung · v1.1.0</a>
+  <a class="knopf" href="start.html">Überblick: was die App kann</a>
+ </div>
+</header>
+
+<p class="unter" style="max-width:900px;margin:1rem auto;padding:0 1rem">Die Bilder zeigen die vorherige Oberfläche. Die zusätzlichen Hinweise, Berichte und Freigaben erklärt die <a href="inhaltspruefung.html">Anleitung zur Inhaltsprüfung</a>.</p>
+<div class="rahmen">
+ <nav class="film" aria-label="Szenen"><a href="#szene-postfach" data-zu="postfach"><span>01</span> Das Postfach</a><a href="#szene-einfuegen" data-zu="einfuegen"><span>02</span> Eine Mail hereinholen</a><a href="#szene-original" data-zu="original"><span>03</span> Die Mail, wie sie ist</a><a href="#szene-ki-sicht" data-zu="ki-sicht"><span>04</span> Was die KI sieht</a><a href="#szene-namen" data-zu="namen"><span>05</span> Namen, die kein Muster findet</a><a href="#szene-aufgaben" data-zu="aufgaben"><span>06</span> Was soll die KI tun?</a><a href="#szene-wege" data-zu="wege"><span>07</span> Zwei Wege hinaus</a><a href="#szene-antwort" data-zu="antwort"><span>08</span> Die Antwort kommt mit Klartext zurück</a><a href="#szene-abschirmen" data-zu="abschirmen"><span>09</span> Abschirmen</a><a href="#szene-knoten" data-zu="knoten"><span>10</span> Ein eigener Knoten im Netz</a><a href="#szene-handy" data-zu="handy"><span>11</span> Am Handy</a><a href="#szene-selbsttest" data-zu="selbsttest"><span>12</span> Der Selbsttest</a></nav>
+ <div class="szenen">
+
+<section class="szene" id="szene-postfach" data-szene="postfach" data-nr="1">
+ <div class="kopfzeile"><span class="nr">01</span><h2>Das Postfach</h2></div>
+ <figure class="bild">
+  <img src="handbuch/01-postfach.jpg" width="1280" height="800" alt="Das Postfach — Bildschirmfoto der App" loading="eager" decoding="async">
+  <span class="ring" data-ring style="left:0%;top:7.6%;width:15.6%;height:92.4%"></span>
+ </figure>
+ <p class="text">Links die vier Ordner: <b>Eingefügt</b> (empfangene Mails), <b>Entwürfe</b>, <b>KI-Antworten</b> und <b>Exportiert</b>. In der Mitte die Liste, rechts die gewählte Mail. Jede Zeile trägt eine Zahl: so viele Angaben werden vor dem Weg zur KI verdeckt. Alles liegt im Speicher dieses Browsers, nicht auf einem Server.</p>
+ <p class="sprech" data-sprech><span class="mikro" aria-hidden="true">🎙</span> Das ist Ihr Postfach im Browser. Vier Ordner, eine Liste, rechts die Mail. Die Zahl an jeder Zeile sagt, wie viele Angaben geschützt werden. Nichts davon liegt auf einem Server.</p>
+</section>
+
+<section class="szene" id="szene-einfuegen" data-szene="einfuegen" data-nr="2">
+ <div class="kopfzeile"><span class="nr">02</span><h2>Eine Mail hereinholen</h2></div>
+ <figure class="bild">
+  <img src="handbuch/02-einfuegen.jpg" width="1280" height="800" alt="Eine Mail hereinholen — Bildschirmfoto der App" loading="eager" decoding="async">
+  <span class="ring" data-ring style="left:25.8%;top:16.4%;width:48.4%;height:67.2%"></span>
+ </figure>
+ <p class="text"><b>📥 Mail einfügen</b> nimmt eine empfangene Mail auf: aus der Zwischenablage, als Text oder als gespeicherte <b>.eml</b>-Datei. Kopfzeilen (Von, An, Betreff) werden erkannt, auch kodierte. Die Mail landet in „Eingefügt“ und bleibt auf diesem Gerät.</p>
+ <p class="sprech" data-sprech><span class="mikro" aria-hidden="true">🎙</span> Eine Mail holen Sie mit Mail einfügen herein: aus der Zwischenablage oder als gespeicherte Datei. Von, An und Betreff erkennt der Sende-Prüfer selbst.</p>
+</section>
+
+<section class="szene" id="szene-original" data-szene="original" data-nr="3">
+ <div class="kopfzeile"><span class="nr">03</span><h2>Die Mail, wie sie ist</h2></div>
+ <figure class="bild">
+  <img src="handbuch/03-original.jpg" width="1280" height="800" alt="Die Mail, wie sie ist — Bildschirmfoto der App" loading="lazy" decoding="async">
+  <span class="ring" data-ring style="left:41.8%;top:40%;width:56%;height:35.7%"></span>
+ </figure>
+ <p class="text">Die Beispiel-Mail aus dem Menü (⚙ → Beispiel-E-Mail laden) ist erfunden und zeigt den ganzen Weg: Namen, eine Firma, Mailadressen, eine Rechnungsnummer, einen Betrag und eine Kontonummer. So sieht <b>Ihr</b> Text aus — in der Ansicht „Original“.</p>
+ <p class="sprech" data-sprech><span class="mikro" aria-hidden="true">🎙</span> Hier eine erfundene Mail mit allem, was nicht zur KI soll: Namen, Adressen, Rechnungsnummer, Betrag und Kontonummer.</p>
+</section>
+
+<section class="szene" id="szene-ki-sicht" data-szene="ki-sicht" data-nr="4">
+ <div class="kopfzeile"><span class="nr">04</span><h2>Was die KI sieht</h2></div>
+ <figure class="bild">
+  <img src="handbuch/04-ki-sicht.jpg" width="1280" height="800" alt="Was die KI sieht — Bildschirmfoto der App" loading="lazy" decoding="async">
+  <span class="ring" data-ring style="left:41.8%;top:35.7%;width:56%;height:41.3%"></span>
+ </figure>
+ <p class="text">Ein Tipp auf <b>Was die KI sieht</b> zeigt genau den Text, der hinausgehen würde. Jede Angabe ist durch einen Platzhalter ersetzt, etwa <code>⟦NAME-1⟧</code> oder <code>⟦BETRAG-1⟧</code>. Dieselbe Angabe bekommt immer denselben Platzhalter, damit die KI den Sinn behält.</p>
+ <p class="sprech" data-sprech><span class="mikro" aria-hidden="true">🎙</span> Mit Was die KI sieht erscheint der Text, der wirklich hinausgeht. Jede Angabe ist ein Platzhalter. Dieselbe Angabe hat immer denselben.</p>
+</section>
+
+<section class="szene" id="szene-namen" data-szene="namen" data-nr="5">
+ <div class="kopfzeile"><span class="nr">05</span><h2>Namen, die kein Muster findet</h2></div>
+ <figure class="bild">
+  <img src="handbuch/05-namen.jpg" width="1280" height="800" alt="Namen, die kein Muster findet — Bildschirmfoto der App" loading="lazy" decoding="async">
+  <span class="ring" data-ring style="left:41.8%;top:78.8%;width:56%;height:18.2%"></span>
+ </figure>
+ <p class="text">Mailadressen, Nummern und Beträge erkennt der Prüfer an ihrer Form. <b>Namen nicht</b> — „Müller“ sieht aus wie jedes andere Wort. Deshalb werden die Namen aus Von und An übernommen, und unter <b>Weitere Namen</b> tragen Sie ein, was sonst noch verdeckt werden soll: eine Firma, ein Kollege, ein Ort.</p>
+ <p class="sprech" data-sprech><span class="mikro" aria-hidden="true">🎙</span> Namen erkennt kein Muster. Die Namen aus Von und An nimmt der Sende-Prüfer selbst, weitere tragen Sie hier ein.</p>
+</section>
+
+<section class="szene" id="szene-aufgaben" data-szene="aufgaben" data-nr="6">
+ <div class="kopfzeile"><span class="nr">06</span><h2>Was soll die KI tun?</h2></div>
+ <figure class="bild">
+  <img src="handbuch/06-aufgaben.jpg" width="1280" height="800" alt="Was soll die KI tun? — Bildschirmfoto der App" loading="lazy" decoding="async">
+  <span class="ring" data-ring style="left:43.1%;top:49.1%;width:53.3%;height:18.6%"></span>
+ </figure>
+ <p class="text">Unter <b>Was soll die KI tun?</b> eine Aufgabe antippen — <b>Antwort</b>, <b>Rechnung</b>, <b>Mahnung</b>, <b>Angebot</b>, <b>Auftragsbestätigung</b>, <b>Termin</b> — oder selbst eintragen und <b>Anweisung bauen</b>. Daraus entsteht die ganze Anweisung: Platzhalter bleiben, nichts wird erfunden, Fehlendes wird als [bitte ergänzen] markiert. <b>Als Knopf merken</b> legt eigene Aufgaben als Knopf an. Auch die Anweisung geht nur verdeckt hinaus.</p>
+ <p class="sprech" data-sprech><span class="mikro" aria-hidden="true">🎙</span> Was soll die KI tun? Eine Aufgabe antippen, etwa Rechnung oder Mahnung, oder selbst eintragen. Daraus entsteht die ganze Anweisung. Eigene Aufgaben lassen sich als Knopf merken.</p>
+</section>
+
+<section class="szene" id="szene-wege" data-szene="wege" data-nr="7">
+ <div class="kopfzeile"><span class="nr">07</span><h2>Zwei Wege hinaus</h2></div>
+ <figure class="bild">
+  <img src="handbuch/07-wege.jpg" width="1280" height="800" alt="Zwei Wege hinaus — Bildschirmfoto der App" loading="lazy" decoding="async">
+  <span class="ring" data-ring style="left:43.1%;top:4.3%;width:53.3%;height:95.7%"></span>
+ </figure>
+ <p class="text"><b>Kopieren</b> für Ihr eigenes KI-Abo: in ChatGPT, Claude oder Le Chat einfügen, ohne Schlüssel und ohne zusätzliche Kosten. <b>Senden</b> geht direkt an Claude, ChatGPT, Gemini, OpenRouter oder Mistral, mit Ihrem eigenen Schlüssel — es kostet, was Ihr Schlüssel kostet. Beide Wege sind gleichrangig; hinaus geht nur der verdeckte Text, und nur auf Knopfdruck.</p>
+ <p class="sprech" data-sprech><span class="mikro" aria-hidden="true">🎙</span> Zwei Wege, beide gleichwertig: kopieren für Ihr eigenes KI-Abo, oder direkt senden mit Ihrem Schlüssel. Hinaus geht nur der geschützte Text, und nur, wenn Sie tippen.</p>
+</section>
+
+<section class="szene" id="szene-antwort" data-szene="antwort" data-nr="8">
+ <div class="kopfzeile"><span class="nr">08</span><h2>Die Antwort kommt mit Klartext zurück</h2></div>
+ <figure class="bild">
+  <img src="handbuch/08-antwort.jpg" width="1280" height="800" alt="Die Antwort kommt mit Klartext zurück — Bildschirmfoto der App" loading="lazy" decoding="async">
+  <span class="ring" data-ring style="left:44.5%;top:41.6%;width:50.7%;height:24.4%"></span>
+ </figure>
+ <p class="text">Die Antwort der KI enthält die Platzhalter. Eingefügt (oder direkt empfangen) setzt der Sende-Prüfer die echten Angaben wieder ein — hier steht dann wieder „Frau Beispiel“ und „1.248,50 EUR“. Ablegen, als .eml speichern oder teilen geht von hier aus.</p>
+ <p class="sprech" data-sprech><span class="mikro" aria-hidden="true">🎙</span> Die Antwort der KI kommt mit Platzhaltern zurück. Der Sende-Prüfer setzt die echten Angaben wieder ein, und Sie können sie ablegen, speichern oder teilen.</p>
+</section>
+
+<section class="szene" id="szene-abschirmen" data-szene="abschirmen" data-nr="9">
+ <div class="kopfzeile"><span class="nr">09</span><h2>Abschirmen</h2></div>
+ <figure class="bild">
+  <img src="handbuch/09-abschirmen.jpg" width="1280" height="800" alt="Abschirmen — Bildschirmfoto der App" loading="lazy" decoding="async">
+  <span class="ring" data-ring style="left:73.5%;top:1.3%;width:11%;height:5%"></span>
+ </figure>
+ <p class="text"><b>🛡 Abschirmen</b> hält Schreib-Helfer wie Grammarly oder LanguageTool und die KI-Schreibhilfe des Browsers von den Schreibfeldern fern. Hängt etwas Fremdes Elemente in die Seite, erscheint oben ein roter Hinweis und die Lampe <b>fremd</b> leuchtet. Das ist eine Bitte an die Erweiterungen, kein Riegel — Programme, die den Bildschirm mitlesen, sieht keine Webseite.</p>
+ <p class="sprech" data-sprech><span class="mikro" aria-hidden="true">🎙</span> Abschirmen hält Schreib-Helfer und die KI-Schreibhilfe des Browsers aus den Feldern heraus. Liest etwas Fremdes mit, leuchtet die Lampe fremd.</p>
+</section>
+
+<section class="szene" id="szene-knoten" data-szene="knoten" data-nr="10">
+ <div class="kopfzeile"><span class="nr">10</span><h2>Ein eigener Knoten im Netz</h2></div>
+ <figure class="bild">
+  <img src="handbuch/10-knoten.jpg" width="1280" height="800" alt="Ein eigener Knoten im Netz — Bildschirmfoto der App" loading="lazy" decoding="async">
+  <span class="ring" data-ring style="left:15.4%;top:1.3%;width:24.3%;height:5%"></span>
+ </figure>
+ <p class="text">Oben neben dem Namen die <b>Netz-Leiste</b>: drei Lampen (<b>lebt</b> · <b>verkehr</b> · <b>fremd</b>), das <b>Siegel</b> und die <b>Mycel-Blase</b>. Der Sende-Prüfer ist ein Knoten im SBKIM-Netz mit eigener Kennung. Mit dem Netz verbindet er sich nur, wenn Sie in der Mycel-Blase darauf tippen — und dann geht nur seine Visitenkarte hinaus, keine Mail.</p>
+ <p class="sprech" data-sprech><span class="mikro" aria-hidden="true">🎙</span> Oben die Netz-Leiste: drei Lampen, das Siegel und die Mycel-Blase. Der Sende-Prüfer ist ein eigener Knoten. Ins Netz geht er nur, wenn Sie es wollen, und nie mit Ihren Mails.</p>
+</section>
+
+<section class="szene hoch" id="szene-handy" data-szene="handy" data-nr="11">
+ <div class="kopfzeile"><span class="nr">11</span><h2>Am Handy</h2></div>
+ <figure class="bild">
+  <img src="handbuch/11-handy.jpg" width="390" height="844" alt="Am Handy — Bildschirmfoto der App" loading="lazy" decoding="async">
+  <span class="ring" data-ring style="left:3.1%;top:1.2%;width:13.6%;height:4.3%"></span>
+ </figure>
+ <p class="text">Am Handy stehen oben nur die drei Lampen. Ein Tipp klappt Namen, Siegel und Mycel-Blase darunter auf, ein Tipp daneben schließt wieder. Die Ordner liegen unten, <b>✎ Verfassen</b> schwebt rechts unten.</p>
+ <p class="sprech" data-sprech><span class="mikro" aria-hidden="true">🎙</span> Am Handy zeigen oben drei Punkte den Zustand. Ein Tipp klappt Siegel und Netz auf. Die Ordner liegen unten.</p>
+</section>
+
+<section class="szene" id="szene-selbsttest" data-szene="selbsttest" data-nr="12">
+ <div class="kopfzeile"><span class="nr">12</span><h2>Der Selbsttest</h2></div>
+ <figure class="bild">
+  <img src="handbuch/12-selbsttest.jpg" width="1280" height="800" alt="Der Selbsttest — Bildschirmfoto der App" loading="lazy" decoding="async">
+  <span class="ring" data-ring style="left:27.3%;top:1.7%;width:45.5%;height:98.3%"></span>
+ </figure>
+ <p class="text">Im Menü (⚙) prüft der <b>Selbsttest</b> den Prüfer an einem Köder: jede Sorte steht dort genau einmal, dazu Zeilen, die nicht gemeldet werden dürfen. So sehen Sie selbst, dass er erkennt, was er verspricht — ohne eigene Daten.</p>
+ <p class="sprech" data-sprech><span class="mikro" aria-hidden="true">🎙</span> Der Selbsttest im Menü prüft den Prüfer an einem Köder. So sehen Sie selbst, dass er hält, was er verspricht.</p>
+</section>
+ </div>
+</div>
+
+<footer class="grenzen">
+ <p><b>Was der Sende-Prüfer nicht ist:</b> kein Virenscanner und kein Mail-Programm. Alle Grenzen stehen in der <a href="anleitung.html">Anleitung</a>. Dieses Handbuch holt nichts aus dem Netz; „▶ Vorführen“ liest nur mit einer Stimme vor, die auf diesem Gerät liegt.</p>
+</footer>
+
+<div class="buehne" id="buehne" hidden role="status" aria-live="polite">
+ <div class="zeile"><span class="ut" id="ut"></span><button class="knopf" id="stopp" type="button">■ Stopp</button></div>
+ <div class="balken"><i id="fortschritt"></i></div>
+ <div class="stimme" id="stimme"></div>
+</div>
+
+<script>
+(function () {
+  "use strict";
+  var ruhig = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  var szenen = [].slice.call(document.querySelectorAll(".szene"));
+  var links = [].slice.call(document.querySelectorAll(".film a"));
+  if (!ruhig) document.documentElement.classList.add("bewegt");
+
+  /* Einblenden beim Rollen, und die Szene im Filmstreifen markieren. */
+  if ("IntersectionObserver" in window) {
+    var io = new IntersectionObserver(function (e) {
+      e.forEach(function (x) {
+        if (!x.isIntersecting) return;
+        x.target.classList.add("da");
+        links.forEach(function (a) { a.setAttribute("aria-current", String(a.dataset.zu === x.target.dataset.szene)); });
+      });
+    }, { rootMargin: "-35% 0px -45% 0px" });
+    szenen.forEach(function (s) { io.observe(s); });
+  } else szenen.forEach(function (s) { s.classList.add("da"); });
+
+  /* ▶ Vorführen: Szene für Szene, mit Untertitel — vorgelesen nur von einer
+     Stimme, die AUF DEM GERÄT liegt (localService). Eine Netz-Stimme schickte
+     den Text an ihren Anbieter; dann gibt es eben nur den Untertitel. */
+  var buehne = document.getElementById("buehne"), ut = document.getElementById("ut"), balken = document.getElementById("fortschritt"), stimmeZeile = document.getElementById("stimme");
+  var laeuft = false, uhr = null, i = 0;
+  function stimme() {
+    var s = window.speechSynthesis; if (!s) return null;
+    var alle = s.getVoices().filter(function (v) { return v.localService && /^de/i.test(v.lang); });
+    return alle[0] || null;
+  }
+  window.__handbuchStimme = stimme;
+  function stopp() {
+    laeuft = false; clearTimeout(uhr); buehne.hidden = true;
+    szenen.forEach(function (s) { s.classList.remove("aktiv"); });
+    try { if (window.speechSynthesis) window.speechSynthesis.cancel(); } catch (_e) {}
+  }
+  function zeige() {
+    if (!laeuft) return;
+    if (i >= szenen.length) { stopp(); return; }
+    var s = szenen[i], text = s.querySelector("[data-sprech]").textContent.replace("🎙", "").trim();
+    szenen.forEach(function (x) { x.classList.toggle("aktiv", x === s); });
+    s.classList.add("da");
+    s.scrollIntoView({ behavior: ruhig ? "auto" : "smooth", block: "start" });
+    ut.textContent = text;
+    balken.style.width = Math.round(((i + 1) / szenen.length) * 100) + "%";
+    var weiter = function () { if (!laeuft) return; i++; uhr = setTimeout(zeige, 700); };
+    var v = stimme();
+    stimmeZeile.textContent = v ? "Vorgelesen von „" + v.name + "“ auf diesem Gerät." : "Keine Stimme auf diesem Gerät — nur Untertitel.";
+    if (v) {
+      var u = new SpeechSynthesisUtterance(text); u.voice = v; u.lang = v.lang; u.rate = 1;
+      var fertig = false; var ende = function () { if (fertig) return; fertig = true; weiter(); };
+      u.onend = ende; u.onerror = ende;
+      uhr = setTimeout(ende, 4000 + text.length * 90);
+      window.speechSynthesis.speak(u);
+    } else uhr = setTimeout(weiter, Math.max(5000, text.length * 65));
+  }
+  document.getElementById("vorfuehren").addEventListener("click", function () {
+    stopp(); laeuft = true; i = 0; buehne.hidden = false; zeige();
+  });
+  document.getElementById("stopp").addEventListener("click", stopp);
+  document.addEventListener("keydown", function (e) { if (e.key === "Escape" && laeuft) stopp(); });
+  window.__handbuch = { stopp: stopp, laeuft: function () { return laeuft; }, szene: function () { return i; } };
+})();
+</script>
+</body>
+</html>

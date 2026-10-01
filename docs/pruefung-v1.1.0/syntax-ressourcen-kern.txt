@@ -1,0 +1,6 @@
+Syntaxprüfungen: 51 Fehler: []
+Unveränderte gemeinsame Module/Bibliotheken: 31 Abweichungen: []
+Vier-Dateien-Grenze: 98222 < 98304
+Fehlende notwendige lokale HTML-Ressourcen: []
+Unverändertes optionales Schwester-App-Bild (vorhandenes onerror blendet es aus): ['../Auslieferung-Pruefer/icons/icon-192.png']
+Offline-Ressourcen: 77

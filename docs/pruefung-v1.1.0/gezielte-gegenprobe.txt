@@ -1,0 +1,6 @@
+✓ gefangen: Befundfreigabe entfernt
+✓ gefangen: Unvollständige Prüfung freigegeben
+✓ gefangen: Zusatzbefunde nicht zentral übernommen
+✓ gefangen: Freigabe nur am Maskentext gebunden
+✓ gefangen: Originaländerung nach API-Aufruf ignoriert
+5 Mutationen gezielt gefangen · 0 Fehler

@@ -1,0 +1,22 @@
+✓ Alle Offline-Ressourcen existieren im Paket
+✓ Inhaltsprüfung und Freigabe stehen im Vorrat
+✓ PDF.js, OCR-WASM und drei Sprachen stehen im Vorrat
+✓ Vorrat enthält nur eigene relative Ressourcen
+✓ Ohne installierte Ressourcen kein Offline-bereit-Status
+✓ Erfolgreiche Installation speichert alle Ressourcen
+✓ skipWaiting erst nach erfolgreicher Installation
+✓ Vollständiger Vorrat meldet Offline bereit
+✓ Ein fehlendes Sprachmodell entwertet Offline bereit
+✓ Aktivierung löscht ausschließlich alte Caches dieses Scopes
+✓ Fremder Prüfercache und anderer Sendercache bleiben erhalten
+✓ Aktivierung übernimmt eigene Clients
+✓ Offline liefert eigene HTML-Ressource aus Cache
+✓ Fehlender OCR-Worker liefert 503 statt HTML als JavaScript
+✓ KI-POST wird nicht abgefangen oder gecacht
+✓ Auch POST an einen eigenen Ressourcenpfad wird nicht abgefangen
+✓ Fremde GET-Anfrage wird nicht abgefangen
+✓ Unbekannter lokaler Benutzerdatenpfad wird nicht gecacht
+✓ Fehlgeschlagener Download lässt Installation scheitern
+✓ Teilweise Installation meldet niemals Offline bereit
+
+20 bestanden · 0 Fehler · Service-Worker-Testmodell, keine Browser-Abnahme
