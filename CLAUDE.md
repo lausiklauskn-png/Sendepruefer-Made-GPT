@@ -516,3 +516,9 @@ Die Dateien liegen nicht im Vorrat; offline beim ersten Mal steht das da. Probe 
 `NUR_FALL="TESTMAIL:"` (4 Fälle, 4 gefangen). Cache v42.
 ⚠ Unter Last (zwei Gegenproben daneben) war `npm test` einmal 2× rot. Welche Zeilen es waren, ist nicht gelesen.
 Ohne Last zweimal 455 grün.
+
+## Kein „Websitedaten löschen“ im Installieren-Rat (2026-10-18)
+
+Der Erklärtext des Knopfs riet zuletzt, die Websitedaten zu löschen; auf github.io teilen sich alle Apps einen Speicher.
+Jetzt (wie Sage #1151): App unter Android-Einstellungen → Apps deinstallieren, Chrome schließen, neu laden, neu installieren.
+Cache v45, `installieren.js?v=2`. ⚠ `npm test` war schon auf main mit 6 ROT (Lesebreite, Verdecken) — nicht hier behoben.
