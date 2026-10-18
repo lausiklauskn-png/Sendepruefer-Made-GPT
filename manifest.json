@@ -3,7 +3,7 @@
   "short_name": "Sende-Prüfer",
   "description": "Kundendaten verdecken, bevor eine KI sie sieht.",
   "lang": "de",
-  "id": "./sende-pruefer-app",
+  "id": "/Sendepruefer-Made-GPT/index.html",
   "start_url": "index.html",
   "scope": "./",
   "display": "standalone",
