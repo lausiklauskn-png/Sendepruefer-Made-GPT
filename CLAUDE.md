@@ -529,3 +529,13 @@ Klaus' Handy zeigte das Erklärfenster des Installieren-Knopfs hell auf weiß: `
 
 **Zweiter Knopf im Menü (Klaus 2026-10-18: „Installieren-Button unter Einstellungen hinten, wie bei meinem Rezeptbuch … sobald installiert, verschwindet er“).** `#installieren-einstellungen` (`data-ort="einstellungen"`, `data-install-knopf`, Mechanik wie Sage-Protokol #1153) steht HINTEN in der Zeile von „☀ / 🌙 Hell oder dunkel“ im ⚙-Menü — dieselbe Klick-Logik, als App beide weg. Am Handy (≤ 480 px) ist der Knopf oben ausgeblendet, dort ist der im Menü der Weg. Die Meldung hängt sich in den offenen Dialog (sonst läge sie hinter der obersten Ebene, unsichtbar). Gemessen im Browser: letztes Element der Zeile, sichtbar, Meldung obenauf; als App (standalone gestellt) versteckt.
 ⚠ **Tafel-Evolution, benannt:** hier zeigte der Knopf als App „✓ App“ und meldete „nichts mehr zu tun“. Seit Klaus' Wort „sobald installiert, verschwindet er; in jede App“ ist er als App weg — wie im Sende-Prüfer.
+
+## ⬇ Installieren oben auf jeder Breite (Klaus 2026-10-18)
+
+Klaus: *„setze den Installationsbutton oben in die Navi-Leiste zusätzlich … verschwinden, wenn die App installiert ist.“*
+⚠ **Tafel-Evolution, benannt:** oben steht *„Am Handy (≤ 480 px) ist der Knopf oben ausgeblendet, dort ist der im Menü der
+Weg.“* Das gilt nicht mehr: `#installieren` steht auf jeder Breite in der Kopfleiste; schmalere runde Knöpfe (32 px breit,
+Höhe 36 px) und Abstände 4/3 px schaffen Platz — gesetzt in `assets/installieren.js`. Gemessen: Suchfeld 65 px bei 320,
+Kopfleiste 57 px wie vorher. Auch `start.html` trägt den Knopf vor „Zur App“. Der Knopf im ⚙-Menü bleibt; als App beide weg.
+`installieren.js?v=4`, Cache v47. `npm test` 444 grün · 6 ROT — die 6 (Lesebreite, Verdecken) stehen so schon auf main.
+Von Hand gegengeprüft: alte Ausblend-Regel zurück → 3 neue rote Zeilen. Am Tablet nicht gemessen.

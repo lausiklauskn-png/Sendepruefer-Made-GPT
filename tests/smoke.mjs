@@ -1138,6 +1138,22 @@ try {
     const kopf = await ip.evaluate(() => { const k = document.querySelector("header.kopf"); return k.scrollWidth - k.clientWidth; });
     ok("… und die Kopfleiste läuft nicht über", kopf === 0, kopf);
     await iCtx.close(); }
+  /* ── Installieren auf jeder Breite oben (Klaus 2026-10-18). Bis dahin war er ≤ 480 px ausgeblendet. ── */
+  for (const breite of [320, 380, 412]) {
+    const kCtx = await browser.newContext({ viewport: { width: breite, height: 800 } }); const kp = await kCtx.newPage();
+    await kp.goto(BASIS + "sende-pruefer.html"); await kp.waitForSelector("#installieren", { state: "attached", timeout: 15000 }).catch(() => {});
+    await kp.waitForTimeout(300);
+    const r = await kp.evaluate(() => { const b = document.getElementById("installieren"), kopf = document.querySelector("header.kopf");
+      return b && { sicht: b.checkVisibility(), inKopf: !!b.closest("header.kopf"), ueber: kopf.scrollWidth - kopf.clientWidth,
+        suche: Math.round(document.querySelector(".suche").getBoundingClientRect().width), hoch: Math.round(kopf.getBoundingClientRect().height) }; });
+    ok(breite + " px: der Installieren-Knopf steht sichtbar oben in der Kopfleiste", !!r && r.sicht && r.inKopf, JSON.stringify(r));
+    ok(breite + " px: … die Kopfleiste läuft nicht über und bleibt einzeilig, das Suchfeld behält 60 px", !!r && r.ueber === 0 && r.hoch <= 61 && r.suche >= 60, JSON.stringify(r));
+    await kp.goto(BASIS + "start.html"); await kp.waitForSelector("#installieren", { state: "attached", timeout: 15000 }).catch(() => {});
+    const st = await kp.evaluate(() => { const b = document.getElementById("installieren");
+      return b && { sicht: b.checkVisibility(), inKopf: !!b.closest("header.kopf"), ueber: document.documentElement.scrollWidth - innerWidth }; });
+    ok(breite + " px: auch auf der Startseite steht der Knopf oben", !!st && st.sicht && st.inKopf && st.ueber === 0, JSON.stringify(st));
+    await kCtx.close();
+  }
   /* ── Anhänge im Browser (tests/anhaenge.mjs) ── */
   await Anhang.imBrowser(ok, browser, BASIS).catch((e) => ok("Anhänge im Browser: unterwegs gestolpert", false, e && e.stack || e));
 } catch (e) {
